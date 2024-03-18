@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/abhaya_libre_medium</item>
+        <item>@font/amaranth_bold</item>
+        <item>@font/baloo_bhai</item>
+        <item>@font/crete_round</item>
+        <item>@font/el_messiri_medium</item>
+        <item>@font/kavoon</item>
+        <item>@font/monda</item>
+        <item>@font/tauri</item>
+        <item>@font/titillium_web</item>
+        <item>@font/yantramanav_thin</item>
+    </array>
+</resources>

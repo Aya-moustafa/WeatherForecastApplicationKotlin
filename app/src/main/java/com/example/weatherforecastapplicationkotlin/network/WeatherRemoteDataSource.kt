@@ -1,16 +1,40 @@
 package com.example.weatherforecastapplicationkotlin.network
 
-import com.example.weatherforecastapplicationkotlin.model.Weather
+import android.util.Log
+import com.example.weatherforecastapplicationkotlin.model.WeatherForeCast
 import com.example.weatherforecastapplicationkotlin.model.WeatherResponse
+import com.example.weatherforecastapplicationkotlin.model.WeatherResponseForecast
+import retrofit2.Response
 
 class WeatherRemoteDataSource private constructor() : IWeatherRemoteDataSource {
     private val weatherService : ApiServices by lazy {
         OpenWeatherMapRetrofit.retrofitInstance.create(ApiServices::class.java)
     }
 
-    override suspend fun getWeatherOverNetwork(lat: Double,lon: Double , exclude: String ,apiKey: String) : WeatherResponse{
+    override suspend fun getWeatherOverNetwork(lat: Double,lon: Double ,apiKey: String, units:String) : Response<WeatherResponse> {
+            val response = weatherService.getWeatherData(lat, lon, apiKey,units)
+            if(response.isSuccessful){
+                 Response.success(response.body()) // Wrap the response body in Response.success()
+                Log.i("TAG", "getAllProducts Repository: The Products = ${response.toString()}")
+            }
+            else{
+                Log.i("TAG", response.errorBody().toString())
+            }
+        return response
+    }
 
-        val response = weatherService.getWeatherData(lat,lon,exclude,apiKey)
+    override suspend fun getWeatherForecastOverNetwork(
+        lat: Double,
+        lon: Double,
+        apiKey: String,
+        units : String
+    ): Response<WeatherForeCast> {
+        val response = weatherService.getWeatherForecast(lat, lon, apiKey,units)
+        if (response.isSuccessful) {
+            Log.i("TAG", "getAllweathersForeCast remoteDataSource: The WeathersList = ${response.toString()}")
+        } else {
+            Log.i("TAG", response.errorBody().toString())
+        }
         return response
     }
 

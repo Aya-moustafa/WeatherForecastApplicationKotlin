@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object OpenWeatherMapRetrofit {
-    const val BASE_URL: String = "https://api.openweathermap.org/data/3.0/"
+    private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/countryconstrain"
+    android:layout_width="110dp"
+    android:layout_height="250dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/Weekly_Card"
+        android:layout_width="90dp"
+        android:layout_height="241dp"
+        android:elevation="1dp"
+        app:cardBackgroundColor="@color/background"
+        app:cardCornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/dayTxt"
+                android:layout_width="72dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/tauri"
+                android:gravity="center"
+                android:text="TextView"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/myTxt"
+                android:layout_width="72dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="36dp"
+                android:fontFamily="@font/baloo_bhai"
+                android:gravity="center"
+                android:text="TextView"
+                android:textColor="@color/gray"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/weekly_img"
+                android:layout_width="72dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dayTxt"
+                app:srcCompat="@drawable/ic_launcher_foreground" />
+
+            <TextView
+                android:id="@+id/weekly_temp"
+                android:layout_width="51dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/black"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toEndOf="@+id/weekly_img"
+                app:layout_constraintHorizontal_bias="0.523"
+                app:layout_constraintStart_toStartOf="@+id/weekly_img"
+                app:layout_constraintTop_toBottomOf="@+id/weekly_img" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="45dp"
+                android:layout_height="46dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/weekly_temp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/celsiusblackicon" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

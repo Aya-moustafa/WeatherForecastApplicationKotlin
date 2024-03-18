@@ -2,4 +2,32 @@
     <string name="app_name">WeatherForecastApplicationKotlin</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home">Home</string>
+    <string name="yourlocation">Location</string>
+    <string name="feels">Feels Like</string>
+    <string name="airquality">Air Quality</string>
+    <string name="wind">Wind</string>
+    <string name="cloud">Cloud</string>
+    <string name="humd">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="uv">UV index</string>
+    <string name="visi">Visibility</string>
+    <string name="weekforecast">Weekly forecast</string>
+    <string name="favo">Favorites</string>
+    <string name="alerts">Notifications</string>
+    <string name="setting">Setting</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="sett">Settings</string>
+    <string name="lang">Languages</string>
+    <string name="eng">English</string>
+    <string name="Arabic" >Arabic</string>
+    <string name="location">Location</string>
+    <string name="gps">GPS</string>
+    <string name="map">MAP</string>
+    <string name="units">Units of Measurement</string>
+    <string name="celsius">Celsius</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="enable">Enable</string>
 </resources>
