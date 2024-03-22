@@ -1,10 +1,12 @@
 package com.example.weatherforecastapplicationkotlin.model
 
 import android.util.Log
+import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 import kotlin.math.log
 
-class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource) {
+class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localDataSource : WeatherLocalDataSource) {
 
     private lateinit var weatherForecastList : WeatherResponseForecast
 
@@ -12,10 +14,11 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource) {
         @Volatile
         private var instance: WeatherRepository? = null
         fun getInstance(
-            remoteDataSource: WeatherRemoteDataSource
+            remoteDataSource: WeatherRemoteDataSource ,
+            localDataSource: WeatherLocalDataSource
         ): WeatherRepository {
             return instance ?: synchronized(this) {
-                instance ?: WeatherRepository(remoteDataSource).also { instance = it }
+                instance ?: WeatherRepository(remoteDataSource,localDataSource).also { instance = it }
             }
         }
     }
@@ -43,7 +46,18 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource) {
              Log.i("TAG", response.errorBody().toString())
              null
          }
-
      }
+
+    suspend fun insertNewPlaceToFavorites (country: Country){
+        localDataSource.insertPlace(country)
+    }
+
+    suspend fun deletePlaceFromFavorites (country: Country){
+        localDataSource.deletePlace(country)
+    }
+
+    suspend fun viewAllFavorites() : Flow<List<Country>>{
+        return localDataSource.getFavPlaces()
+    }
 
 }

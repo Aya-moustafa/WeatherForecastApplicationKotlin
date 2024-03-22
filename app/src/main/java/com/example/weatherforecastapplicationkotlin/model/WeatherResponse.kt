@@ -15,12 +15,12 @@ data class WeatherResponse(
     val name: String,
     val cod: Int
 ){
-    fun getTemperatureInCelsius(): Int {
-        val temperatureCelsius = main.temp - 273.15
+    fun getTemperatureInInt(): Int {
+        val temperatureCelsius = main.temp
         return temperatureCelsius.toInt()
     }
-    fun getTempFeelsLikeInCelsius(): Int {
-        val temperatureCelsius = main.feels_like - 273.15
+    fun getTempFeelsLikeInInt(): Int {
+        val temperatureCelsius = main.feels_like
         return temperatureCelsius.toInt()
     }
 

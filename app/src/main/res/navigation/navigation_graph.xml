@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/homeFragment2">
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.weatherforecastapplicationkotlin.favorites.view.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_favoritesFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.example.weatherforecastapplicationkotlin.home_page.view.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment2_to_searchOnMapFragment2"
+            app:destination="@id/searchOnMapFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchOnMapFragment2"
+        android:name="com.example.weatherforecastapplicationkotlin.search.SearchOnMapFragment"
+        android:label="fragment_search_on_map"
+        tools:layout="@layout/fragment_search_on_map" >
+        <action
+            android:id="@+id/action_searchOnMapFragment2_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_searchOnMapFragment2_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.weatherforecastapplicationkotlin.setting.view.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+    </fragment>
+</navigation>

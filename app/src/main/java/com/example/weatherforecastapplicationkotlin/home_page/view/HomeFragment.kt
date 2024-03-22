@@ -27,9 +27,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.weatherforecastapplicationkotlin.MainActivity.API_KEY
-import com.example.weatherforecastapplicationkotlin.MainActivity.viewmodel.SharedViewMode
-import com.example.weatherforecastapplicationkotlin.MainActivity.viewmodel.SharedViewModelFactory
+import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
+import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.example.weatherforecastapplicationkotlin.R
+import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Clouds
@@ -46,6 +47,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -68,7 +70,6 @@ class HomeFragment : Fragment() {
     private lateinit var weekly_forecast : RecyclerView
     private lateinit var current_temp_img : ImageView
     lateinit var  adapter : WeeklyForecastListAdapter
-    lateinit var  settingsOptions: SettingOptions
    // private lateinit var weekly_forecast_List : List<WeatherItem>
 
 
@@ -80,20 +81,25 @@ class HomeFragment : Fragment() {
     private  var latitude: Double  = 0.0
     lateinit  var weatherViewModel: WeatherViewModel
     lateinit var  weatherFactory: WeatherViewModelFactory
-    lateinit  var sharedViewModel: SharedViewMode
-    lateinit var  sharedFactory: SharedViewModelFactory
+    lateinit  var settingViewModel: SettingViewMode
+    lateinit var  sharedFactory: SettingViewModelFactory
      var  unitTemp  : String = "standard"
+     var  windSpeed : String = "Meter/Sec"
+     var  language  : String = "en"
+     var  location  : String = "gps"
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate: ")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.i(TAG, "onCreateView: ")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
@@ -125,10 +131,21 @@ class HomeFragment : Fragment() {
 
         weekly_forecast = view.findViewById(R.id.weekly_forecast_recycle)
 
-        weatherFactory = WeatherViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance()))
+        if (isLocationEnabled()) {
+            if (checkPermissions()) {
+                getFreshLocation()
+            } else {
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE)
+            }
+        } else {
+            enableLocationServices()
+        }
+        weatherFactory = WeatherViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(),
+            WeatherLocalDataSource(requireContext())
+        ),requireContext())
         weatherViewModel = ViewModelProvider(this,weatherFactory).get(WeatherViewModel::class.java)
-        sharedFactory = SharedViewModelFactory()
-        sharedViewModel = ViewModelProvider(requireActivity(),sharedFactory).get(SharedViewMode::class.java)
+        sharedFactory = SettingViewModelFactory(requireActivity().application)
+        settingViewModel = ViewModelProvider(this,sharedFactory).get(SettingViewMode::class.java)
         val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
         adapter = WeeklyForecastListAdapter(requireContext())
         weekly_forecast.adapter = adapter
@@ -136,8 +153,11 @@ class HomeFragment : Fragment() {
         weatherViewModel.weather.observe(viewLifecycleOwner){
             current_weather ->
             yourLocation.text= current_weather.name
-            temp.text        = current_weather.getTemperatureInCelsius().toString()
-            feelsLike.text   = current_weather.getTempFeelsLikeInCelsius().toString()
+            var main : Main = current_weather.main
+            temp.text = current_weather.getTemperatureInInt().toString()
+            //   temp.text        = current_weather.getTemperatureInCelsius().toString()
+
+            feelsLike.text   = current_weather.getTempFeelsLikeInInt().toString()
             var weather : Weather = current_weather.weather.get(0)
             desc.text        = weather.description
             val formattedDate = formatDate(current_weather.dt)
@@ -148,7 +168,6 @@ class HomeFragment : Fragment() {
             var clouds : Clouds = current_weather.clouds
             var formatedClouds = formatCloudiness(clouds)
             cloudTV.text = formatedClouds
-            var main : Main = current_weather.main
             var formattedHumidity = formatHumidity(main)
             humidityTV.text   = formattedHumidity
             var formattedPressure = formatPressure(main)
@@ -193,25 +212,47 @@ class HomeFragment : Fragment() {
             adapter.submitList(filteredList)
             Log.i(TAG, "onViewCreated: The Weather Forecast For 5 days left is: $filteredList")
         }
-
-       lifecycleScope.launch{
-           sharedViewModel.settings.collect{
-               settings -> 
-               settingsOptions = settings
-               unitTemp = settingsOptions.unitsTemp
-               Log.i(TAG, "onViewCreated: The Settings Option That Return is $settingsOptions")
-           }
-       }
-
-        if (isLocationEnabled()) {
-            if (checkPermissions()) {
-                getFreshLocation()
-            } else {
-                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE)
+        lifecycleScope.launch {
+             weatherViewModel.settingsFlow.collectLatest{
+                 setting ->
+                 unitTemp = setting.unitsTemp
+                 language = setting.language
+                 location = setting.location
+                 windSpeed= setting.windSpeed
+                 Log.i(TAG, "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$location ")   //Ask Heba
             }
-        } else {
-            enableLocationServices()
         }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        weatherViewModel.emitChangingSetting()
+
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy: ")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i(TAG, "onPause: ")
+    }
+
+    
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i(TAG, "onDestroyView: ")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.i(TAG, "onDetach: ")
+    }
+
+    override fun onResume() {
+        super.onResume()
 
     }
 

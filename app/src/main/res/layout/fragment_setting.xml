@@ -8,6 +8,13 @@
     tools:context=".setting.view.SettingFragment">
 
 
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ScrollView>
+
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="461dp"
@@ -45,342 +52,437 @@
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent" />
 
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="166dp"
-        android:layout_height="34dp"
-        android:layout_marginTop="28dp"
-        android:fontFamily="@font/crete_round"
-        android:text="@string/lang"
-        android:textColor="@color/black"
-        android:textSize="20sp"
+    <ScrollView
+        android:layout_width="407dp"
+        android:layout_height="627dp"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.114"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView3"
-        android:layout_width="388dp"
-        android:layout_height="93dp"
-        android:layout_marginTop="12dp"
-        android:elevation="15dp"
-        app:cardBackgroundColor="#FDF8FF"
-        app:cardCornerRadius="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4">
-
+        app:layout_constraintTop_toBottomOf="@+id/textView2" >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/english"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/eng"
+                android:id="@+id/textView4"
+                android:layout_width="166dp"
+                android:layout_height="34dp"
+                android:fontFamily="@font/crete_round"
+                android:text="@string/lang"
                 android:textColor="@color/black"
-                android:textSize="18dp"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.114"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView3"
+                android:layout_width="388dp"
+                android:layout_height="93dp"
+                android:layout_marginTop="12dp"
+                android:elevation="15dp"
+                app:cardBackgroundColor="#FDF8FF"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.473"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/english"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/eng"
+                        android:textColor="@color/black"
+                        android:textSize="18dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/arabic"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/Arabic"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/english" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switcheng"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.872"
+                        app:layout_constraintStart_toEndOf="@+id/english"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switcharb"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="52dp"
+                        android:thumb="@drawable/thumb"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.87"
+                        app:layout_constraintStart_toEndOf="@+id/arabic"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
             <TextView
-                android:id="@+id/arabic"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/Arabic"
+                android:id="@+id/textView5"
+                android:layout_width="166dp"
+                android:layout_height="34dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/crete_round"
+                android:text="@string/location"
                 android:textColor="@color/black"
-                android:textSize="20dp"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.116"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView4"
+                android:layout_width="392dp"
+                android:layout_height="81dp"
+                android:layout_marginTop="12dp"
+                android:elevation="15dp"
+                app:cardBackgroundColor="#FDF8FF"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.473"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/GPS"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/gps"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/MAP"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/map"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/GPS" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchgps"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        android:thumb="@drawable/thumb"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.872"
+                        app:layout_constraintStart_toEndOf="@+id/GPS"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchmap"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="52dp"
+                        android:thumb="@drawable/thumb"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.87"
+                        app:layout_constraintStart_toEndOf="@+id/MAP"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="247dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/crete_round"
+                android:text="@string/units"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.17"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView4" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView5"
+                android:layout_width="388dp"
+                android:layout_height="127dp"
+                android:elevation="15dp"
+                app:cardBackgroundColor="#FDF8FF"
+                app:cardCornerRadius="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.473"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/english" />
+                app:layout_constraintTop_toBottomOf="@+id/textView6"
+                app:layout_constraintVertical_bias="0.07999998">
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switcheng"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.872"
-                app:layout_constraintStart_toEndOf="@+id/english"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switcharb"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="52dp"
-                android:thumb="@drawable/thumb"
+                    <TextView
+                        android:id="@+id/cels"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/celsius"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/kel"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/kelvin"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cels"
+                        app:layout_constraintVertical_bias="0.076" />
+
+                    <TextView
+                        android:id="@+id/fehr"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/fahrenheit"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cels"
+                        app:layout_constraintVertical_bias="0.923" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchcels"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.872"
+                        app:layout_constraintStart_toEndOf="@+id/cels"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchkel"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="52dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.87"
+                        app:layout_constraintStart_toEndOf="@+id/kel"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchfehr"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.874"
+                        app:layout_constraintStart_toEndOf="@+id/fehr"
+                        app:layout_constraintTop_toBottomOf="@+id/switchkel"
+                        app:layout_constraintVertical_bias="0.1" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="247dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/crete_round"
+                android:text="@string/wind_speed"
+                android:textColor="@color/black"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.87"
-                app:layout_constraintStart_toEndOf="@+id/arabic"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintHorizontal_bias="0.17"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView5" />
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView6"
+                android:layout_width="380dp"
+                android:layout_height="80dp"
+                android:elevation="15dp"
+                app:cardBackgroundColor="#FDF8FF"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.473"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView7"
+                app:layout_constraintVertical_bias="0.19999999">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:id="@+id/windMeterSecTxt"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/m_s"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.34" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/windmeter_sec_switch"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.87"
+                        app:layout_constraintStart_toEndOf="@+id/windMeterSecTxt"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.301" />
+
+                    <TextView
+                        android:id="@+id/windMileTxt"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/mile_hour"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/windMeterSecTxt"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/windmile_hour_swtich"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.87"
+                        app:layout_constraintStart_toEndOf="@+id/windMileTxt"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.886" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="247dp"
+                android:layout_height="38dp"
+                android:fontFamily="@font/crete_round"
+                android:text="@string/alerts"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView6" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="376dp"
+                android:layout_height="53dp"
+                android:elevation="15dp"
+                app:cardBackgroundColor="#FDF8FF"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView8" >
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:id="@+id/notificationTxt"
+                        android:layout_width="159dp"
+                        android:layout_height="33dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/titillium_web"
+                        android:text="@string/enable"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchnotif"
+                        android:layout_width="74dp"
+                        android:layout_height="24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.872"
+                        app:layout_constraintStart_toEndOf="@+id/notificationTxt"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="166dp"
-        android:layout_height="34dp"
-        android:layout_marginTop="28dp"
-        android:fontFamily="@font/crete_round"
-        android:text="@string/location"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.114"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView3" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView4"
-        android:layout_width="392dp"
-        android:layout_height="81dp"
-        android:layout_marginTop="12dp"
-        android:elevation="15dp"
-        app:cardBackgroundColor="#FDF8FF"
-        app:cardCornerRadius="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/GPS"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/gps"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/MAP"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/map"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/GPS" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchgps"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="16dp"
-                android:thumb="@drawable/thumb"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.872"
-                app:layout_constraintStart_toEndOf="@+id/GPS"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchmap"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="52dp"
-                android:thumb="@drawable/thumb"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.87"
-                app:layout_constraintStart_toEndOf="@+id/MAP"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="247dp"
-        android:layout_height="38dp"
-        android:layout_marginTop="24dp"
-        android:fontFamily="@font/crete_round"
-        android:text="@string/units"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.17"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView4" />
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView5"
-        android:layout_width="388dp"
-        android:layout_height="127dp"
-        android:elevation="15dp"
-        app:cardBackgroundColor="#FDF8FF"
-        app:cardCornerRadius="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6"
-        app:layout_constraintVertical_bias="0.07999998">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/cels"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/celsius"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/kel"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/kelvin"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cels"
-                app:layout_constraintVertical_bias="0.076" />
-
-            <TextView
-                android:id="@+id/fehr"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/fahrenheit"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cels"
-                app:layout_constraintVertical_bias="0.923" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchcels"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.872"
-                app:layout_constraintStart_toEndOf="@+id/cels"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchkel"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="52dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.87"
-                app:layout_constraintStart_toEndOf="@+id/kel"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchfehr"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.874"
-                app:layout_constraintStart_toEndOf="@+id/fehr"
-                app:layout_constraintTop_toBottomOf="@+id/switchkel"
-                app:layout_constraintVertical_bias="0.1" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="247dp"
-        android:layout_height="38dp"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/crete_round"
-        android:text="@string/alerts"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.17"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView5" />
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView6"
-        android:layout_width="385dp"
-        android:layout_height="50dp"
-        android:elevation="15dp"
-        app:cardBackgroundColor="#FDF8FF"
-        app:cardCornerRadius="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7"
-        app:layout_constraintVertical_bias="0.43">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-            <TextView
-                android:id="@+id/notificationTxt"
-                android:layout_width="159dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/titillium_web"
-                android:text="@string/enable"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchnotif"
-                android:layout_width="74dp"
-                android:layout_height="24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.872"
-                app:layout_constraintStart_toEndOf="@+id/notificationTxt"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

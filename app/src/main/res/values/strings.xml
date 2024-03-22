@@ -21,13 +21,16 @@
     <string name="sett">Settings</string>
     <string name="lang">Languages</string>
     <string name="eng">English</string>
-    <string name="Arabic" >Arabic</string>
+    <string name="Arabic">Arabic</string>
     <string name="location">Location</string>
     <string name="gps">GPS</string>
     <string name="map">MAP</string>
-    <string name="units">Units of Measurement</string>
+    <string name="units">Temperature Unit</string>
     <string name="celsius">Celsius</string>
     <string name="kelvin">Kelvin</string>
     <string name="fahrenheit">Fahrenheit</string>
     <string name="enable">Enable</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="m_s">Meter/Sec</string>
+    <string name="mile_hour">Mile/Hour</string>
 </resources>

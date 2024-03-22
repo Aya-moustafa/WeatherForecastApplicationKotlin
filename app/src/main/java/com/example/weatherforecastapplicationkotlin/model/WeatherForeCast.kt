@@ -20,7 +20,7 @@ data class WeatherItem(
     val dt_txt: String
 ) {
     fun getTemperature(): Int {
-        val temperatureCelsius = main.temp - 273.15
+        val temperatureCelsius = main.temp
         return temperatureCelsius.toInt()
     }
 }
