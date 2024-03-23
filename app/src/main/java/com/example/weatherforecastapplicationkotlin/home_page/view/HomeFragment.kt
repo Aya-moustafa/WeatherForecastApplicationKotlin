@@ -206,6 +206,7 @@ class HomeFragment : Fragment() {
                 if (currentTime == "00:00:00" || currentDate != previousDate) {
                     filteredList.add(weatherData)
                     previousDate = currentDate
+
                 }
             }
 

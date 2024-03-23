@@ -10,6 +10,10 @@ import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
+import com.example.weatherforecastapplicationkotlin.MainActivity.isMapSwitchChecked
+import com.example.weatherforecastapplicationkotlin.MainActivity.isSearchOnMapOpenedFromSetting
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.example.weatherforecastapplicationkotlin.R
@@ -38,7 +42,6 @@ class SettingFragment : Fragment() {
     lateinit  var settingViewModel: SettingViewMode
     lateinit var  sharedFactory: SettingViewModelFactory
     lateinit var backBtn : ImageView
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,17 +131,32 @@ class SettingFragment : Fragment() {
                 allSettings.location = "gps"
                 settingViewModel.updateSettings(allSettings)
                 mapSwitch.isChecked = false
+
             }
         }
 
-        mapSwitch.setOnCheckedChangeListener { buttonView , isChecked ->
-            if(isChecked){
-                allSettings.location = "map"
-                settingViewModel.updateSettings(allSettings)
-                gpsSwitch.isChecked = false
+        mapSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                if(settingViewModel.getMapState() == false){
+                    isMapSwitchChecked = true
+                    allSettings.location = "map"
+                    settingViewModel.updateSettings(allSettings)
+                    gpsSwitch.isChecked = false
+                    val navController = findNavController()
+                    val bundle = Bundle().apply {
+                        putBoolean("fromSetting", true) // Pass your boolean flag here
+                    }
+                    navController.navigate(R.id.searchOnMapFragment, bundle)
+
+                }else {
+                    allSettings.location = "map"
+                    settingViewModel.updateSettings(allSettings)
+                    gpsSwitch.isChecked = false
+                }
+            }else {
+                isMapSwitchChecked= false
             }
         }
-
         wind_meter_sec.setOnCheckedChangeListener { buttonView , isChecked ->
             if(isChecked){
                 allSettings.windSpeed = "Meter/Sec"
@@ -201,9 +219,16 @@ class SettingFragment : Fragment() {
         if (allSettings.location == "gps") {
             gpsSwitch.isChecked = true
             mapSwitch.isChecked = false
+            isMapSwitchChecked = false
         } else if (allSettings.location == "map") {
             gpsSwitch.isChecked = false
             mapSwitch.isChecked = true
+            isMapSwitchChecked = true
+           /* val navController = findNavController()
+            val bundle = Bundle().apply {
+                putBoolean("fromSetting", true) // Pass your boolean flag here
+            }
+            navController.navigate(R.id.searchOnMapFragment, bundle)*/
         }
 
         if (allSettings.windSpeed == "Meter/Sec") {

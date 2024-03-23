@@ -12,8 +12,11 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.example.weatherforecastapplicationkotlin.MainActivity.isSearchOnMapOpenedFromSetting
 import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
 import com.google.android.gms.maps.GoogleMap
@@ -38,6 +41,9 @@ class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
     lateinit var map :FrameLayout
     lateinit  var favFactory : FavoritesViewModelFactory
     lateinit var  fav_view_model: FavoritesViewModel
+    var  fromSetting : Boolean = false
+    var  fromFavorite: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,6 +60,11 @@ class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         map = view.findViewById(R.id.map)
+        if (arguments?.getBoolean("fromSetting") == true) {
+            // Fragment opened from SettingFragment, handle accordingly
+            isSearchOnMapOpenedFromSetting = true
+        }
+        fromSetting = arguments?.getBoolean("fromSetting") ?: false
         favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext())))
         fav_view_model = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
@@ -66,6 +77,14 @@ class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (isSearchOnMapOpenedFromSetting) {
+            // Clear the flag to prevent reopening the fragment again
+            isSearchOnMapOpenedFromSetting = false
+        }
+    }
+
     private fun backToHomeFragment() {
         /*requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, FavoritesFragment())
@@ -76,33 +95,82 @@ class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        gMap.setOnMapClickListener {latLng ->
-            addMarker(latLng)
-            val rootView = requireView()
-            val snackbar = Snackbar.make(rootView,"Do you want to save this location ?",Snackbar.LENGTH_LONG)
-                .setActionTextColor(Color.WHITE)
-                .setBackgroundTint(ContextCompat.getColor(requireContext(),R.color.secondColor))
+        if(fromFavorite) {
+            gMap.setOnMapClickListener { latLng ->
+                addMarker(latLng)
+                val rootView = requireView()
+                val snackbar = Snackbar.make(
+                    rootView,
+                    "Do you want to save this location ?",
+                    Snackbar.LENGTH_LONG
+                )
+                    .setActionTextColor(Color.WHITE)
+                    .setBackgroundTint(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.secondColor
+                        )
+                    )
 
-            snackbar.setAction("Dismiss"){
-                snackbar.dismiss()
+                snackbar.setAction("Dismiss") {
+                    snackbar.dismiss()
+                }
+                snackbar.setAction("Save") {
+                    val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                    val cityName = getCityName(addresses)
+                    if (!cityName.isNullOrEmpty()) {
+                        val country = Country(cityName, latLng.latitude, latLng.longitude)
+                        fav_view_model.insertProduct(country)
+                        Toast.makeText(
+                            requireContext(),
+                            "insert ${cityName} Success..",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else
+                        Toast.makeText(
+                            requireContext(),
+                            "Please select correct place",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+
+                    Log.i(TAG, "onMapReady: The City Name That Selected $cityName ")
+                }
+                snackbar.show()
+
             }
-            snackbar.setAction("Save") {
+        } else if(fromSetting) {
+            gMap.setOnMapClickListener { latLng ->
+                addMarker(latLng)
+
                 val geocoder = Geocoder(requireContext(), Locale.getDefault())
                 val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
                 val cityName = getCityName(addresses)
-                if(!cityName.isNullOrEmpty()){
-                    val country = Country(cityName,latLng.latitude,latLng.longitude)
-                    fav_view_model.insertProduct(country)
-                    Toast.makeText(requireContext(),"insert ${cityName} Success..",Toast.LENGTH_LONG).show()
-                }else
-                    Toast.makeText(requireContext(),"Please select correct place",Toast.LENGTH_LONG).show()
+                if (!cityName.isNullOrEmpty()) {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage("$cityName")
+                        .setPositiveButton("Save") { dialog, _ ->
+                            val navController = findNavController()
+                            navController.navigate(R.id.homeFragment2)
 
-
-                Log.i(TAG, "onMapReady: The City Name That Selected $cityName ")
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton("Dismiss") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select correct place",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
-            snackbar.show()
-
         }
+        fromSetting = false
+        fromFavorite= false
     }
 
     private fun addMarker(laLng: LatLng) {

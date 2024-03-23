@@ -62,6 +62,9 @@ dependencies {
 //ViewModel
     implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+    // navgraph
+    implementation ("androidx.navigation:navigation-fragment:2.7.7")
+    implementation ("androidx.navigation:navigation-ui:2.7.7")
 //Location
     implementation("com.google.android.gms:play-services-location:21.1.0")
     implementation("androidx.core:core-ktx:1.12.0")
@@ -69,8 +72,6 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.google.android.material:material:1.11.0")
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation ("com.getbase:floatingactionbutton:1.10.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

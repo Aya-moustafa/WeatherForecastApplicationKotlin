@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherforecastapplicationkotlin.MainActivity.isMapSwitchChecked
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,6 +26,7 @@ class SettingViewMode(private val application: Application) : ViewModel() {
                 putString("selectedWindSpeed",settingOptions.windSpeed)
                 putString("selectedLocation",settingOptions.location)
                 putString("selectedLanguage",settingOptions.language)
+                putBoolean("isMapSwitchChecked",isMapSwitchChecked )
                 apply()
             }
     }
@@ -36,6 +38,10 @@ class SettingViewMode(private val application: Application) : ViewModel() {
             settingsSharedPreference.getString("selectedLocation","") ?: "",
             settingsSharedPreference.getString("selectedLanguage","") ?: ""
         )
+    }
+
+    fun getMapState () : Boolean {
+        return settingsSharedPreference.getBoolean("isMapSwitchChecked",false)
     }
 
 }

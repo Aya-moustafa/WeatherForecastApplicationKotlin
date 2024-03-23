@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment2">
+
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.example.weatherforecastapplicationkotlin.home_page.view.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment2_to_settingFragment2"
+            app:destination="@id/settingFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment2"
+        android:name="com.example.weatherforecastapplicationkotlin.favorites.view.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_favoritesFragment2_to_searchOnMapFragment"
+            app:destination="@id/searchOnMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchOnMapFragment"
+        android:name="com.example.weatherforecastapplicationkotlin.search.SearchOnMapFragment"
+        android:label="fragment_search_on_map"
+        tools:layout="@layout/fragment_search_on_map" >
+        <argument android:name="from_sett"
+            app:argType="boolean" />
+        <argument
+            android:name="from_fav"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_searchOnMapFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_searchOnMapFragment_to_settingFragment2"
+            app:destination="@id/settingFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragment2"
+        android:name="com.example.weatherforecastapplicationkotlin.setting.view.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment2_to_searchOnMapFragment"
+            app:destination="@id/searchOnMapFragment" />
+    </fragment>
+</navigation>

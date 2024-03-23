@@ -60,6 +60,7 @@ class FavoritesFragment : Fragment() {
                     places ->
                 adapter.submitList(places)
                 Log.i(TAG, "onViewCreated: Favorite Products : $places")
+
             }
         }
 
