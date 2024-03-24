@@ -24,8 +24,8 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localD
     }
 
 
-     suspend fun getWeatherDetails (lat: Double,lon: Double ,apiKey: String ,units : String) : WeatherResponse? {
-         val response = remoteDataSource.getWeatherOverNetwork(lat, lon, apiKey,units)
+     suspend fun getWeatherDetails (lat: Double,lon: Double ,apiKey: String ,units : String,lan:String) : WeatherResponse? {
+         val response = remoteDataSource.getWeatherOverNetwork(lat, lon, apiKey,units,lan)
          return if (response.isSuccessful) {
              // Return the response body
              Log.i("TAG", "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<getWeatherDetails: ${response.body()}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -36,8 +36,8 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localD
          }
      }
 
-     suspend fun getWeatherForecast (lat: Double,lon: Double ,apiKey: String,units : String) : WeatherForeCast? {
-         val response = remoteDataSource.getWeatherForecastOverNetwork(lat,lon,apiKey,units)
+     suspend fun getWeatherForecast (lat: Double,lon: Double ,apiKey: String,units : String,lan:String) : WeatherForeCast? {
+         val response = remoteDataSource.getWeatherForecastOverNetwork(lat,lon,apiKey,units,lan)
          return if(response.isSuccessful){
              Log.i("TAG", "getWeatherForeCast Repository: The responseofWeather = ${response.body()}")
              response.body()

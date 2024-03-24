@@ -6,7 +6,7 @@ import com.example.weatherforecastapplicationkotlin.model.WeatherResponseForecas
 import retrofit2.Response
 
 interface IWeatherRemoteDataSource {
-    suspend fun getWeatherOverNetwork(lat: Double,lon: Double ,apiKey: String , units:String): Response<WeatherResponse>
-    suspend fun getWeatherForecastOverNetwork(lat: Double,lon: Double ,apiKey: String, units:String): Response<WeatherForeCast>
+    suspend fun getWeatherOverNetwork(lat: Double,lon: Double ,apiKey: String , units:String,lan:String): Response<WeatherResponse>
+    suspend fun getWeatherForecastOverNetwork(lat: Double,lon: Double ,apiKey: String, units:String,lan:String): Response<WeatherForeCast>
 
 }

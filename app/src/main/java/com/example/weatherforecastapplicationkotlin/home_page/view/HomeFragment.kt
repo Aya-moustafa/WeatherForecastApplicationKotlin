@@ -34,19 +34,18 @@ import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSou
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Clouds
+import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.Main
 import com.example.weatherforecastapplicationkotlin.model.Weather
 import com.example.weatherforecastapplicationkotlin.model.WeatherItem
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.model.Wind
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
-import com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -72,13 +71,13 @@ class HomeFragment : Fragment() {
     lateinit var  adapter : WeeklyForecastListAdapter
    // private lateinit var weekly_forecast_List : List<WeatherItem>
 
-
-
     private final var TAG :String = "HomeFrag"
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val REQUEST_LOCATION_CODE = 1001 // Your request code
     private  var longitude: Double = 0.0
     private  var latitude: Double  = 0.0
+    private  var longitudeFromSett: Double = 0.0
+    private  var latitudeFromSett: Double  = 0.0
     lateinit  var weatherViewModel: WeatherViewModel
     lateinit var  weatherFactory: WeatherViewModelFactory
     lateinit  var settingViewModel: SettingViewMode
@@ -86,8 +85,7 @@ class HomeFragment : Fragment() {
      var  unitTemp  : String = "standard"
      var  windSpeed : String = "Meter/Sec"
      var  language  : String = "en"
-     var  location  : String = "gps"
-
+     var  locationSett  : String = "gps"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,7 +115,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         current_temp_img = view.findViewById(R.id.currentTempImg)
-        yourLocation = view.findViewById(R.id.location)
+        yourLocation = view.findViewById(R.id.tess)
         temp         = view.findViewById(R.id.tempTxt)
         feelsLike    = view.findViewById(R.id.feelsLike)
         desc         = view.findViewById(R.id.descTxt)
@@ -128,10 +126,9 @@ class HomeFragment : Fragment() {
         presstureTV  = view.findViewById(R.id.pressTxt)
         UVTV         = view.findViewById(R.id.uvTxt)
         visibTV      = view.findViewById(R.id.visiTxt)
-
         weekly_forecast = view.findViewById(R.id.weekly_forecast_recycle)
 
-        if (isLocationEnabled()) {
+     if (isLocationEnabled()) {
             if (checkPermissions()) {
                 getFreshLocation()
             } else {
@@ -150,10 +147,24 @@ class HomeFragment : Fragment() {
         adapter = WeeklyForecastListAdapter(requireContext())
         weekly_forecast.adapter = adapter
         weekly_forecast.layoutManager = layoutManager
+        arguments?.let { args ->
+            val country = args.getSerializable("country") as? Country
+            if (country != null) {
+                weatherViewModel.saveReturnCountryFromMap(country)
+                Log.i(TAG, "onViewCreated: The Returned country from the Setting fragment is be : ${country.countryName}")
+            }
+        }
+        val country =weatherViewModel.getCountryFromSHaredPref()
+        longitudeFromSett = country.longtuide
+        latitudeFromSett  = country.latitude
+       // countryName       = country.countryName
+        yourLocation.text = country.countryName
         weatherViewModel.weather.observe(viewLifecycleOwner){
             current_weather ->
-            yourLocation.text= current_weather.name
             var main : Main = current_weather.main
+            if(locationSett == "gps") {
+                yourLocation.text = current_weather.name
+            }
             temp.text = current_weather.getTemperatureInInt().toString()
             //   temp.text        = current_weather.getTemperatureInCelsius().toString()
 
@@ -163,8 +174,14 @@ class HomeFragment : Fragment() {
             val formattedDate = formatDate(current_weather.dt)
             date.text        = formattedDate
             var wind : Wind = current_weather.wind
-            var formattedWind = formatWind(wind)
-            windTV.text      = formattedWind
+            Log.i("wind", "onViewCreated:${current_weather.wind} ")
+            if(windSpeed == "Meter/Sec"){
+                var formattedWind = formatWindInMeterPerSec(wind)
+                windTV.text      = formattedWind+"m/s"
+            }else if (windSpeed == "Mile/Hour") {
+                var formattedWind = formatWindInMilesPerHour(wind)
+                windTV.text      = formattedWind+"mph"
+            }
             var clouds : Clouds = current_weather.clouds
             var formatedClouds = formatCloudiness(clouds)
             cloudTV.text = formatedClouds
@@ -185,7 +202,7 @@ class HomeFragment : Fragment() {
                 .into(current_temp_img)
             Log.i(TAG, "onViewCreated:  The WEAAA = $current_weather ")
         }
-
+       // setLocationNameInUI()
         weatherViewModel.weatherForecast.observe(viewLifecycleOwner) { weatherForecast ->
             val filteredList = mutableListOf<WeatherItem>()
 
@@ -218,13 +235,13 @@ class HomeFragment : Fragment() {
                  setting ->
                  unitTemp = setting.unitsTemp
                  language = setting.language
-                 location = setting.location
+                 locationSett = setting.location
                  windSpeed= setting.windSpeed
-                 Log.i(TAG, "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$location ")   //Ask Heba
+                 Log.i(TAG, "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$locationSett ")   //Ask Heba
             }
         }
-    }
 
+    }
 
     override fun onStart() {
         super.onStart()
@@ -275,10 +292,17 @@ class HomeFragment : Fragment() {
         return dateFormat.format(calendar.time)
     }
 
-    fun formatWind(wind: Wind): String {
+    fun formatWindInMeterPerSec(wind: Wind): String {
         return "${String.format("%.2f", wind.speed)} m/s"
     }
-
+    fun convertMetersPerSecondToMilesPerHour(mps: Double): Double {
+        return mps * 2.23694
+    }
+    fun formatWindInMilesPerHour(wind: Wind): String {
+        val speedInMetersPerSecond = wind.speed
+        val speedInMilesPerHour = convertMetersPerSecondToMilesPerHour(speedInMetersPerSecond)
+        return "${String.format("%.2f", speedInMilesPerHour)} mph"
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -314,9 +338,25 @@ class HomeFragment : Fragment() {
                     if (location != null) {
                         longitude = location.longitude
                         latitude  = location.latitude
-                        weatherViewModel.getWeather(latitude, longitude, API_KEY,unitTemp)
-                        weatherViewModel.getWeatherForecast(latitude,longitude, API_KEY,unitTemp)
-                        Log.i(TAG, "onLocationResult: <<<<<<<<<<<<<<<<<<<<<<<<<<The Unit Temp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $unitTemp")
+                        Log.i(TAG, "onLocationResult: enter the gps location $locationSett")
+
+                        if(locationSett == "map"){
+                            weatherViewModel.getWeather(latitudeFromSett, longitudeFromSett, API_KEY,unitTemp,language)
+                            weatherViewModel.getWeatherForecast(latitudeFromSett,longitudeFromSett, API_KEY,unitTemp,language)
+                            Log.i(TAG, "onLocationResult: enter the map location $longitudeFromSett")
+                        }else if (locationSett == "gps") {
+                            weatherViewModel.getWeather(latitude, longitude, API_KEY, unitTemp,language)
+                            weatherViewModel.getWeatherForecast(
+                                latitude,
+                                longitude,
+                                API_KEY,
+                                unitTemp,language
+                            )
+                            Log.i(TAG, "onLocationResult: enter the gps location $language")
+                        }
+
+
+                        Log.i(TAG, "onLocationResult: <<<<<<<<<<<<<<<<<<<<<<<<<<The Unit Temp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $unitTemp and longFromSett $longitudeFromSett")
                     }
 
                     fusedLocationProviderClient.removeLocationUpdates(this)

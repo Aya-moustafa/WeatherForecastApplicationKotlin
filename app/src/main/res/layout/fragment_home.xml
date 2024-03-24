@@ -9,40 +9,6 @@
         android:orientation="vertical"
        tools:context=".home_page.view.HomeFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="25dp"
-            android:layout_height="24dp"
-            android:src="@drawable/locationicon"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/location"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.56" />
-
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="246dp"
-            android:layout_height="38dp"
-            android:fontFamily="@font/baloo_bhai"
-            android:gravity="left|center"
-            android:text="@string/yourlocation"
-            android:textColor="@color/black"
-            android:textSize="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.91"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.058" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -56,17 +22,28 @@
            >
 
 
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="25dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="104dp"
+                android:src="@drawable/locationicon"
+                app:layout_constraintBottom_toBottomOf="@+id/tess"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.42000002" />
+
             <TextView
                 android:id="@+id/tess"
-                android:layout_width="408dp"
-                android:layout_height="44dp"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center|top"
-                android:text=""
+                android:layout_width="204dp"
+                android:layout_height="48dp"
+                android:fontFamily="@font/baloo_bhai"
+                android:gravity="top"
+                android:text="@string/yourlocation"
                 android:textColor="@color/black"
-                android:textSize="25dp"
+                android:textSize="30dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.333"
+                app:layout_constraintHorizontal_bias="0.663"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -264,8 +241,8 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constraintLayout3"
-                        android:layout_width="95dp"
-                        android:layout_height="36dp"
+                        android:layout_width="115dp"
+                        android:layout_height="31dp"
                         android:layout_marginTop="12dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
@@ -287,7 +264,7 @@
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="1.0"
+                            app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toEndOf="@+id/windImg"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0" />
@@ -304,10 +281,9 @@
 
                         <TextView
                             android:id="@+id/windTxt"
-                            android:layout_width="43dp"
-                            android:layout_height="15dp"
-                            android:layout_marginEnd="20dp"
-                            android:gravity="left"
+                            android:layout_width="65dp"
+                            android:layout_height="13dp"
+                            android:gravity="center|left"
                             android:paddingStart="3dp"
                             android:text="0"
                             android:textColor="@color/black"
@@ -315,10 +291,10 @@
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@+id/windImg"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintHorizontal_bias="1.0"
                             app:layout_constraintStart_toStartOf="@+id/wind"
-                            app:layout_constraintTop_toBottomOf="@+id/wind"
-                            app:layout_constraintVertical_bias="0.0" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="1.0" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

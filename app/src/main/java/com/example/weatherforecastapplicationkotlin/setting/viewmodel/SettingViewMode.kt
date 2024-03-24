@@ -18,6 +18,7 @@ class SettingViewMode(private val application: Application) : ViewModel() {
     private var settingsSharedPreference = application.getSharedPreferences("Setting",Context.MODE_PRIVATE)
     private val _settings: MutableSharedFlow<SettingOptions> = MutableSharedFlow<SettingOptions>(replay = 1)
     val settings: SharedFlow<SettingOptions> = _settings
+    private var mapFragmentOpenedFromSetting = false
 
     fun updateSettings(settingOptions: SettingOptions) {
 
@@ -34,14 +35,19 @@ class SettingViewMode(private val application: Application) : ViewModel() {
     fun getSavedSettings() : SettingOptions {
         return SettingOptions(
             settingsSharedPreference.getString("selectedTempertureUnit","") ?: "",
-            settingsSharedPreference.getString("selectedWindSpeed","") ?: "",
-            settingsSharedPreference.getString("selectedLocation","") ?: "",
-            settingsSharedPreference.getString("selectedLanguage","") ?: ""
+            settingsSharedPreference.getString("selectedWindSpeed","") ?: "Meter/Sec",
+            settingsSharedPreference.getString("selectedLanguage","") ?: "",
+            settingsSharedPreference.getString("selectedLocation","") ?: ""
         )
     }
 
     fun getMapState () : Boolean {
         return settingsSharedPreference.getBoolean("isMapSwitchChecked",false)
+    }
+    fun isMapFragmentOpenedFromSetting() = mapFragmentOpenedFromSetting
+
+    fun setMapFragmentOpenedFromSetting(opened: Boolean) {
+        mapFragmentOpenedFromSetting = opened
     }
 
 }

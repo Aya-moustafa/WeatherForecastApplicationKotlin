@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherforecastapplicationkotlin.MainActivity.isMapSwitchChecked
+import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.Weather
 import com.example.weatherforecastapplicationkotlin.model.WeatherForeCast
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
@@ -21,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.log
 
 class WeatherViewModel(private var _repo : WeatherRepository, val context : Context) : ViewModel() {
-    private var hasEmittedSettings = false
 
     private var _weatherForecast : MutableLiveData<WeatherForeCast> = MutableLiveData<WeatherForeCast>()
      val weatherForecast : LiveData<WeatherForeCast> = _weatherForecast
@@ -29,6 +30,7 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
     private var  _weather : MutableLiveData<WeatherResponse> = MutableLiveData<WeatherResponse>()
     val weather : LiveData<WeatherResponse> = _weather
 
+    private var countrySharedPreference = context.getSharedPreferences("country",Context.MODE_PRIVATE)
     private val settingsSharedPreference = context.getSharedPreferences("Setting", Context.MODE_PRIVATE)
 
     private val _settingsFlow = MutableSharedFlow<SettingOptions>(replay = 1)
@@ -39,23 +41,23 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
 
     }
 
-    fun getWeather (lat: Double,lon: Double ,apiKey: String,units : String) {
+    fun getWeather (lat: Double,lon: Double ,apiKey: String,units : String,lan:String) {
         Log.i("TAG", "getWeather: ")
           viewModelScope.launch(Dispatchers.IO) {
-               _weather.postValue(_repo.getWeatherDetails(lat , lon , apiKey,units))
+               _weather.postValue(_repo.getWeatherDetails(lat , lon , apiKey,units,lan))
               Log.i("TAG", "getWeather: in launch")
           }
     }
 
-    fun getWeatherForecast (lat: Double , lon: Double ,apiKey: String,units : String){
+    fun getWeatherForecast (lat: Double , lon: Double ,apiKey: String,units : String,lan:String){
         viewModelScope.launch(Dispatchers.IO) {
-            _weatherForecast.postValue(_repo.getWeatherForecast(lat,lon,apiKey,units))
+            _weatherForecast.postValue(_repo.getWeatherForecast(lat,lon,apiKey,units,lan))
         }
     }
 
     fun emitChangingSetting () {
         val updatedSetting = getSettingDataFromSP()
-            Log.i("Init", "inInit Scope: $updatedSetting ")
+        Log.i("Init", "inInit Scope: $updatedSetting ")
             viewModelScope.launch {
                 _settingsFlow.emit(updatedSetting)
         }
@@ -63,9 +65,32 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
     fun getSettingDataFromSP () : SettingOptions{
         return SettingOptions(
             settingsSharedPreference.getString("selectedTempertureUnit","") ?: "",
-            settingsSharedPreference.getString("selectedWindSpeed","") ?: "",
-            settingsSharedPreference.getString("selectedLocation","") ?: "",
-            settingsSharedPreference.getString("selectedLanguage","") ?: ""
+            settingsSharedPreference.getString("selectedWindSpeed","") ?: "Meter/Sec",
+            settingsSharedPreference.getString("selectedLanguage","") ?: "",
+            settingsSharedPreference.getString("selectedLocation","") ?: ""
+        )
+    }
+
+    fun saveReturnCountryFromMap(country: Country) {
+        with(countrySharedPreference.edit()){
+            putString("countryName" , country.countryName)
+            putString("countryLat",country.latitude.toString())
+            putString("countryLong",country.longtuide.toString())
+            apply()
+        }
+    }
+
+    fun getCountryFromSHaredPref () : Country {
+        val name = countrySharedPreference.getString("countryName","")
+        val latString = countrySharedPreference.getString("countryLat","") ?: "0.0"
+        val longString = countrySharedPreference.getString("countryLong","") ?: "0.0"
+        val latitude = latString.toDoubleOrNull() ?: 0.0
+        val longitude = longString.toDoubleOrNull() ?: 0.0
+        Log.i("TESTCOUNTRYFROMPREFF", "getCountryFromSHaredPref: Name = $name , long = $longitude , lat=$latitude")
+        return Country(
+            name.toString(),
+            latitude,
+            longitude
         )
     }
 

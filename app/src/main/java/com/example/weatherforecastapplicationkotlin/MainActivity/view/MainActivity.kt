@@ -9,11 +9,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.weatherforecastapplicationkotlin.R
 import com.google.android.material.navigation.NavigationView
 
-class MainActivity : AppCompatActivity()  {
+ class MainActivity : AppCompatActivity()  {
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -34,8 +36,7 @@ class MainActivity : AppCompatActivity()  {
                 drawerLayout.openDrawer(GravityCompat.START)
             }
         }
-        navController =
-            Navigation.findNavController(this, R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigationView, navController)
 
     }

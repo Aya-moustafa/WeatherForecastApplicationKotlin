@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import java.io.IOException
 import java.util.Locale
 
 class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
@@ -117,25 +118,28 @@ class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
                 }
                 snackbar.setAction("Save") {
                     val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                    val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                    val cityName = getCityName(addresses)
-                    if (!cityName.isNullOrEmpty()) {
-                        val country = Country(cityName, latLng.latitude, latLng.longitude)
-                        fav_view_model.insertProduct(country)
-                        Toast.makeText(
-                            requireContext(),
-                            "insert ${cityName} Success..",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else
-                        Toast.makeText(
-                            requireContext(),
-                            "Please select correct place",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-
-                    Log.i(TAG, "onMapReady: The City Name That Selected $cityName ")
+                    try {
+                        val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                        val cityName = getCityName(addresses)
+                        if (!cityName.isNullOrEmpty()) {
+                            val country = Country(cityName, latLng.latitude, latLng.longitude)
+                            fav_view_model.insertProduct(country)
+                            Toast.makeText(
+                                requireContext(),
+                                "insert ${cityName} Success..",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else
+                            Toast.makeText(
+                                requireContext(),
+                                "Please select correct place",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        Log.i(TAG, "onMapReady: The City Name That Selected $cityName ")
+                    }catch (e: IOException){
+                        Log.e(TAG, "Error getting location information: ${e.message}")
+                        Toast.makeText(requireContext(), "Check your connection and try again..", Toast.LENGTH_SHORT).show()
+                    }
                 }
                 snackbar.show()
 
@@ -148,11 +152,16 @@ class SearchOnMapFragment : Fragment() , OnMapReadyCallback {
                 val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
                 val cityName = getCityName(addresses)
                 if (!cityName.isNullOrEmpty()) {
+                    val country = Country(cityName, latLng.latitude, latLng.longitude)
                     AlertDialog.Builder(requireContext())
                         .setMessage("$cityName")
                         .setPositiveButton("Save") { dialog, _ ->
+
                             val navController = findNavController()
-                            navController.navigate(R.id.homeFragment2)
+                            val bundle = Bundle().apply {
+                                putSerializable("country",country)
+                            }
+                            navController.navigate(R.id.homeFragment,bundle)
 
                             dialog.dismiss()
                         }

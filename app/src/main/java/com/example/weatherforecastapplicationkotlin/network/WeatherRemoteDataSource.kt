@@ -11,8 +11,8 @@ class WeatherRemoteDataSource private constructor() : IWeatherRemoteDataSource {
         OpenWeatherMapRetrofit.retrofitInstance.create(ApiServices::class.java)
     }
 
-    override suspend fun getWeatherOverNetwork(lat: Double,lon: Double ,apiKey: String, units:String) : Response<WeatherResponse> {
-            val response = weatherService.getWeatherData(lat, lon, apiKey,units)
+    override suspend fun getWeatherOverNetwork(lat: Double,lon: Double ,apiKey: String, units:String,lan:String) : Response<WeatherResponse> {
+            val response = weatherService.getWeatherData(lat, lon, apiKey,units,lan)
             if(response.isSuccessful){
                  Response.success(response.body()) // Wrap the response body in Response.success()
                 Log.i("TAG", "getAllProducts Repository: The Products = ${response.toString()}")
@@ -27,9 +27,10 @@ class WeatherRemoteDataSource private constructor() : IWeatherRemoteDataSource {
         lat: Double,
         lon: Double,
         apiKey: String,
-        units : String
+        units : String,
+        lan:String
     ): Response<WeatherForeCast> {
-        val response = weatherService.getWeatherForecast(lat, lon, apiKey,units)
+        val response = weatherService.getWeatherForecast(lat, lon, apiKey,units,lan)
         if (response.isSuccessful) {
             Log.i("TAG", "getAllweathersForeCast remoteDataSource: The WeathersList = ${response.toString()}")
         } else {
