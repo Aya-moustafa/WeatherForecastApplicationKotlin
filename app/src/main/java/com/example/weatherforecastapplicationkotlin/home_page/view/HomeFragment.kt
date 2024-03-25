@@ -5,8 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
@@ -46,6 +44,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -55,6 +59,7 @@ import java.util.Locale
 const val REQUEST_LOCATION_CODE = 2005
 
 class HomeFragment : Fragment() {
+    private lateinit var translateArabic : Translator
     private lateinit var yourLocation : TextView
     private lateinit var temp : TextView
     private lateinit var feelsLike : TextView
@@ -147,6 +152,7 @@ class HomeFragment : Fragment() {
         adapter = WeeklyForecastListAdapter(requireContext())
         weekly_forecast.adapter = adapter
         weekly_forecast.layoutManager = layoutManager
+
         arguments?.let { args ->
             val country = args.getSerializable("country") as? Country
             if (country != null) {
@@ -154,11 +160,11 @@ class HomeFragment : Fragment() {
                 Log.i(TAG, "onViewCreated: The Returned country from the Setting fragment is be : ${country.countryName}")
             }
         }
+        downloadModelToTranslate()
         val country =weatherViewModel.getCountryFromSHaredPref()
         longitudeFromSett = country.longtuide
         latitudeFromSett  = country.latitude
        // countryName       = country.countryName
-        yourLocation.text = country.countryName
         weatherViewModel.weather.observe(viewLifecycleOwner){
             current_weather ->
             var main : Main = current_weather.main
@@ -166,8 +172,6 @@ class HomeFragment : Fragment() {
                 yourLocation.text = current_weather.name
             }
             temp.text = current_weather.getTemperatureInInt().toString()
-            //   temp.text        = current_weather.getTemperatureInCelsius().toString()
-
             feelsLike.text   = current_weather.getTempFeelsLikeInInt().toString()
             var weather : Weather = current_weather.weather.get(0)
             desc.text        = weather.description
@@ -231,22 +235,40 @@ class HomeFragment : Fragment() {
             Log.i(TAG, "onViewCreated: The Weather Forecast For 5 days left is: $filteredList")
         }
         lifecycleScope.launch {
-             weatherViewModel.settingsFlow.collectLatest{
-                 setting ->
-                 unitTemp = setting.unitsTemp
-                 language = setting.language
-                 locationSett = setting.location
-                 windSpeed= setting.windSpeed
-                 Log.i(TAG, "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$locationSett ")   //Ask Heba
+            settingViewModel.settingsFlow.collectLatest { setting ->
+                unitTemp = setting.unitsTemp
+                language = setting.language
+                locationSett = setting.location
+                windSpeed = setting.windSpeed
+                lifecycleScope.launch(Dispatchers.Main) {
+                    when (language) {
+                        "ar" -> {
+                            // If the language is English, translate the city name to Arabic
+                            translateCityName(country.countryName) { translatedCityName ->
+                                // Update the location text view with the translated city name
+                                yourLocation.text = translatedCityName
+                                //    yourLocation.invalidate()
+                                Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
+                            }
+                        }
+                        "en" -> {
+                            yourLocation.text = country.countryName
+                            yourLocation.invalidate()
+                            Log.i(TAG, "onViewCreated: the returned city when en : ${country.countryName}")
+                        }
+                    }
+                }
+                Log.i(
+                    TAG,
+                    "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$locationSett "
+                )   //Ask Heba
             }
         }
-
     }
 
     override fun onStart() {
         super.onStart()
-        weatherViewModel.emitChangingSetting()
-
+        settingViewModel.emitChangingSetting()
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -379,20 +401,37 @@ class HomeFragment : Fragment() {
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    fun getAddressFromLocation(context: Context, latitude: Double, longitude: Double): String {
-        val geocoder = Geocoder(context, requireContext().resources.configuration.locale)
-        val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
 
-        return if (addresses != null && addresses.isNotEmpty()) {
-            val address: Address = addresses[0]
-            val sb = StringBuilder()
-            for (i in 0..address.maxAddressLineIndex) {
-                sb.append(address.getAddressLine(i)).append("\n")
+    private fun downloadModelToTranslate() {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(TranslateLanguage.ARABIC)
+            .build()
+        translateArabic = Translation.getClient(options)
+        var conditions = DownloadConditions.Builder()
+            .requireWifi()
+            .build()
+        translateArabic.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                // Model downloaded successfully. Okay to start translating.
+                // (Set a flag, unhide the translation UI, etc.)
             }
-            sb.toString()
-        } else {
-            "No address found"
-        }
+            .addOnFailureListener { exception ->
+                // Model couldn’t be downloaded or other internal error.
+                // ...
+            }
+
     }
+
+    private fun translateCityName(cityName: String, onSuccess: (String) -> Unit) {
+        translateArabic.translate(cityName)
+            .addOnSuccessListener { translatedText ->
+                onSuccess(translatedText)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Translation failed with exception: ${exception.message}")
+            }
+    }
+
 
 }

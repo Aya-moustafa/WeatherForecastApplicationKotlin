@@ -28,9 +28,9 @@
     </fragment>
     <fragment
         android:id="@+id/searchOnMapFragment"
-        android:name="com.example.weatherforecastapplicationkotlin.search.SearchOnMapFragment"
+        android:name="com.example.weatherforecastapplicationkotlin.search_feature.LocationMapFragment"
         android:label="fragment_search_on_map"
-        tools:layout="@layout/fragment_search_on_map" >
+        tools:layout="@layout/fragment_location_map" >
         <argument android:name="from_sett"
             app:argType="boolean" />
         <argument

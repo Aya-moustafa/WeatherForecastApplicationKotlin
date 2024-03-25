@@ -33,8 +33,7 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
     private var countrySharedPreference = context.getSharedPreferences("country",Context.MODE_PRIVATE)
     private val settingsSharedPreference = context.getSharedPreferences("Setting", Context.MODE_PRIVATE)
 
-    private val _settingsFlow = MutableSharedFlow<SettingOptions>(replay = 1)
-    val settingsFlow: SharedFlow<SettingOptions> = _settingsFlow
+
 
 
     init {
@@ -55,7 +54,7 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
         }
     }
 
-    fun emitChangingSetting () {
+   /* fun emitChangingSetting () {
         val updatedSetting = getSettingDataFromSP()
         Log.i("Init", "inInit Scope: $updatedSetting ")
             viewModelScope.launch {
@@ -70,7 +69,7 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
             settingsSharedPreference.getString("selectedLocation","") ?: ""
         )
     }
-
+*/
     fun saveReturnCountryFromMap(country: Country) {
         with(countrySharedPreference.edit()){
             putString("countryName" , country.countryName)

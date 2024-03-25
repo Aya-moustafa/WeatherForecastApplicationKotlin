@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 //This ViewModel Shared Between Fragments
 class SettingViewMode(private val application: Application) : ViewModel() {
     private var settingsSharedPreference = application.getSharedPreferences("Setting",Context.MODE_PRIVATE)
-    private val _settings: MutableSharedFlow<SettingOptions> = MutableSharedFlow<SettingOptions>(replay = 1)
-    val settings: SharedFlow<SettingOptions> = _settings
+    private val _settingsFlow = MutableSharedFlow<SettingOptions>(replay = 1)
+    val settingsFlow: SharedFlow<SettingOptions> = _settingsFlow
     private var mapFragmentOpenedFromSetting = false
 
     fun updateSettings(settingOptions: SettingOptions) {
@@ -31,7 +31,13 @@ class SettingViewMode(private val application: Application) : ViewModel() {
                 apply()
             }
     }
-
+    fun emitChangingSetting () {
+        val updatedSetting = getSavedSettings()
+        Log.i("Init", "inInit Scope: $updatedSetting ")
+        viewModelScope.launch {
+            _settingsFlow.emit(updatedSetting)
+        }
+    }
     fun getSavedSettings() : SettingOptions {
         return SettingOptions(
             settingsSharedPreference.getString("selectedTempertureUnit","") ?: "",

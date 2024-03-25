@@ -18,7 +18,6 @@ import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.Favorite
 import com.example.weatherforecastapplicationkotlin.home_page.view.HomeFragment
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
-import com.example.weatherforecastapplicationkotlin.search.SearchOnMapFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
