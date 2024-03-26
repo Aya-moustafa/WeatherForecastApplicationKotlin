@@ -8,9 +8,10 @@ import java.io.Serializable
 @Entity(tableName = "Fav_Places")
 
 data class Country(
-    @NotNull
-    @PrimaryKey
     var countryName : String,
+    @PrimaryKey
+    @NotNull
+    var cityName  : String,
     @NotNull
     var latitude : Double,
     @NotNull

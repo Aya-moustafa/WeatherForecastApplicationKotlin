@@ -1,4 +1,4 @@
-package com.example.weatherforecastapplicationkotlin.database
+package com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 interface IWeatherLocalDataSource {
     @Query("SELECT * FROM Fav_Places")
     fun getFavPlaces () : Flow<List<Country>>
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPlace (country: Country)
     @Delete

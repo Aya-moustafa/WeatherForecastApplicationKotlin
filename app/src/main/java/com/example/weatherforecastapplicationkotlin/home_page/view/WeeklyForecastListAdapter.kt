@@ -39,7 +39,7 @@ class WeeklyForecastListAdapter(context: Context)  : ListAdapter<WeatherItem, My
         var FirstThreeLetterFromDay = formattedDate.substring(0,3)
         holder.week_day.text = FirstThreeLetterFromDay
         holder.weekly_date.text = monthAndYear.toString()
-        holder.weeklyTemp.text = weatherItem.getTemperature().toString()
+        holder.weeklyTemp.text = weatherItem.getTemperatureInInt().toString()
         val url_img = "https://openweathermap.org/img/wn/" + weather.icon + ".png"
         Glide.with(context).load(url_img)
             .apply(

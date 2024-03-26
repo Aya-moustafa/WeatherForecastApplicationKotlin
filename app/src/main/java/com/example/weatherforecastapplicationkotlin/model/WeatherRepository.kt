@@ -1,40 +1,26 @@
 package com.example.weatherforecastapplicationkotlin.model
 
 import android.util.Log
-import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import kotlinx.coroutines.flow.Flow
-import kotlin.math.log
 
-class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localDataSource : WeatherLocalDataSource) {
-
-    private lateinit var weatherForecastList : WeatherResponseForecast
+class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localDataSource : WeatherLocalDataSource, val homeWeatherLocalDataSource : TodayWeatherLocalDataSource) {
 
     companion object {
         @Volatile
         private var instance: WeatherRepository? = null
         fun getInstance(
             remoteDataSource: WeatherRemoteDataSource ,
-            localDataSource: WeatherLocalDataSource
+            localDataSource: WeatherLocalDataSource,
+            weatherLocalDataSource: TodayWeatherLocalDataSource
         ): WeatherRepository {
             return instance ?: synchronized(this) {
-                instance ?: WeatherRepository(remoteDataSource,localDataSource).also { instance = it }
+                instance ?: WeatherRepository(remoteDataSource,localDataSource,weatherLocalDataSource).also { instance = it }
             }
         }
     }
-
-
-     suspend fun getWeatherDetails (lat: Double,lon: Double ,apiKey: String ,units : String,lan:String) : WeatherResponse? {
-         val response = remoteDataSource.getWeatherOverNetwork(lat, lon, apiKey,units,lan)
-         return if (response.isSuccessful) {
-             // Return the response body
-             Log.i("TAG", "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<getWeatherDetails: ${response.body()}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-             response.body()
-         } else {
-             Log.i("TAG", response.errorBody()?.string() ?: "Unknown error")
-             null // Return null in case of error
-         }
-     }
 
      suspend fun getWeatherForecast (lat: Double,lon: Double ,apiKey: String,units : String,lan:String) : WeatherForeCast? {
          val response = remoteDataSource.getWeatherForecastOverNetwork(lat,lon,apiKey,units,lan)
@@ -58,6 +44,18 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localD
 
     suspend fun viewAllFavorites() : Flow<List<Country>>{
         return localDataSource.getFavPlaces()
+    }
+
+    suspend fun viewAllHomeWeather() : Flow<WeatherForeCast> {
+        return homeWeatherLocalDataSource.getHomeWeather()
+    }
+
+    suspend  fun insertTodayWeatherDetails (weatherForeCast: WeatherForeCast){
+        homeWeatherLocalDataSource.insertTodayWeatherDeatils(weatherForeCast)
+    }
+
+    suspend fun deleteTodayWeatherDeatils (weatherForeCast:WeatherForeCast){
+        homeWeatherLocalDataSource.deleteTodayWeatherDeatils(weatherForeCast)
     }
 
 }

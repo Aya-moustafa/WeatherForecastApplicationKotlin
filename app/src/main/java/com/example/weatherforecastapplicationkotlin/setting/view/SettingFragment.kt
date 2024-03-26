@@ -7,22 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import com.example.weatherforecastapplicationkotlin.MainActivity.isMapSwitchChecked
-import com.example.weatherforecastapplicationkotlin.MainActivity.isSearchOnMapOpenedFromSetting
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.home_page.view.HomeFragment
-import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
-import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
-import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions
 
 class SettingFragment : Fragment() {

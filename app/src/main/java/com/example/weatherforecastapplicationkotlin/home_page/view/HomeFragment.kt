@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -16,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -28,16 +30,17 @@ import com.example.weatherforecastapplicationkotlin.MainActivity.API_KEY
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Clouds
 import com.example.weatherforecastapplicationkotlin.model.Country
-import com.example.weatherforecastapplicationkotlin.model.Main
 import com.example.weatherforecastapplicationkotlin.model.Weather
 import com.example.weatherforecastapplicationkotlin.model.WeatherItem
+import com.example.weatherforecastapplicationkotlin.model.WeatherMain
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
-import com.example.weatherforecastapplicationkotlin.model.Wind
+import com.example.weatherforecastapplicationkotlin.model.WindWeather
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -53,7 +56,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
@@ -74,7 +80,8 @@ class HomeFragment : Fragment() {
     private lateinit var weekly_forecast : RecyclerView
     private lateinit var current_temp_img : ImageView
     lateinit var  adapter : WeeklyForecastListAdapter
-   // private lateinit var weekly_forecast_List : List<WeatherItem>
+
+    // private lateinit var weekly_forecast_List : List<WeatherItem>
 
     private final var TAG :String = "HomeFrag"
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -91,7 +98,8 @@ class HomeFragment : Fragment() {
      var  windSpeed : String = "Meter/Sec"
      var  language  : String = "en"
      var  locationSett  : String = "gps"
-
+     var todayDate : String = ""
+     var dateFromRoom : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,6 +125,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         current_temp_img = view.findViewById(R.id.currentTempImg)
@@ -143,7 +152,7 @@ class HomeFragment : Fragment() {
             enableLocationServices()
         }
         weatherFactory = WeatherViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(),
-            WeatherLocalDataSource(requireContext())
+            WeatherLocalDataSource(requireContext()), TodayWeatherLocalDataSource(requireContext())
         ),requireContext())
         weatherViewModel = ViewModelProvider(this,weatherFactory).get(WeatherViewModel::class.java)
         sharedFactory = SettingViewModelFactory(requireActivity().application)
@@ -152,7 +161,8 @@ class HomeFragment : Fragment() {
         adapter = WeeklyForecastListAdapter(requireContext())
         weekly_forecast.adapter = adapter
         weekly_forecast.layoutManager = layoutManager
-
+        todayDate = getCurrentDateTimeFormatted()
+        Log.i(TAG, "onViewCreated: Current Date is $todayDate")
         arguments?.let { args ->
             val country = args.getSerializable("country") as? Country
             if (country != null) {
@@ -165,20 +175,38 @@ class HomeFragment : Fragment() {
         longitudeFromSett = country.longtuide
         latitudeFromSett  = country.latitude
        // countryName       = country.countryName
-        weatherViewModel.weather.observe(viewLifecycleOwner){
-            current_weather ->
-            var main : Main = current_weather.main
-            if(locationSett == "gps") {
-                yourLocation.text = current_weather.name
+       // setLocationNameInUI()
+        if(dateFromRoom != todayDate) {
+            weatherViewModel.weatherForecast.observe(viewLifecycleOwner) { weatherForecast ->
+                Log.i(TAG, "onViewCreated: The Returned Data From Api : ${weatherForecast}")
+                weatherForecast?.let {
+                    Log.i(
+                        TAG,
+                        "onViewCreated: The Current Day of List of 5 Days : ${it.list.get(0)}"
+                    )
+                    Log.i(TAG, "onViewCreated: for Dao : $it")
+                    weatherViewModel.insertHomeWeatherDetails(it)
+                }
             }
-            temp.text = current_weather.getTemperatureInInt().toString()
-            feelsLike.text   = current_weather.getTempFeelsLikeInInt().toString()
-            var weather : Weather = current_weather.weather.get(0)
+        }
+        weatherViewModel.getHomeWeatherFromRoom()
+        weatherViewModel.weatherFromRoom.observe(viewLifecycleOwner){
+            room_data ->
+            dateFromRoom = getDatePart(room_data.list.get(0).dt_txt)
+            Log.i(TAG, "onViewCreated:  The Returned Data From Room is ${dateFromRoom} ")
+            var today = room_data.list.get(0)
+            var main : WeatherMain = room_data.list.get(0).main
+           // if(locationSett == "gps") {
+                yourLocation.text = room_data.city.name
+          //  }
+            temp.text =today.getTemperatureInInt().toString()
+            feelsLike.text   = main.feels_like.toString()
+            var weather : Weather = today.weather.get(0)
             desc.text        = weather.description
-            val formattedDate = formatDate(current_weather.dt)
+            val formattedDate = formatDate(today.dt)
             date.text        = formattedDate
-            var wind : Wind = current_weather.wind
-            Log.i("wind", "onViewCreated:${current_weather.wind} ")
+            var wind : WindWeather = today.wind
+            Log.i("wind", "onViewCreated:${wind} ")
             if(windSpeed == "Meter/Sec"){
                 var formattedWind = formatWindInMeterPerSec(wind)
                 windTV.text      = formattedWind+"m/s"
@@ -186,16 +214,16 @@ class HomeFragment : Fragment() {
                 var formattedWind = formatWindInMilesPerHour(wind)
                 windTV.text      = formattedWind+"mph"
             }
-            var clouds : Clouds = current_weather.clouds
+            var clouds : Clouds = today.clouds
             var formatedClouds = formatCloudiness(clouds)
             cloudTV.text = formatedClouds
             var formattedHumidity = formatHumidity(main)
             humidityTV.text   = formattedHumidity
             var formattedPressure = formatPressure(main)
             presstureTV.text  = formattedPressure
-            var UV  = current_weather.getUV()
-            UVTV.text = UV.toString()
-            visibTV.text = current_weather.visibility.toString()+" m"
+            var UV  = today.sys.pod
+            UVTV.text = UV
+            visibTV.text = today.visibility.toString()+" m"
             val url_img = "https://openweathermap.org/img/wn/" + weather.icon + ".png"
             Glide.with(this@HomeFragment).load(url_img)
                 .apply(
@@ -204,15 +232,11 @@ class HomeFragment : Fragment() {
                     //  .error(R.drawable.placeholder)
                 )
                 .into(current_temp_img)
-            Log.i(TAG, "onViewCreated:  The WEAAA = $current_weather ")
-        }
-       // setLocationNameInUI()
-        weatherViewModel.weatherForecast.observe(viewLifecycleOwner) { weatherForecast ->
             val filteredList = mutableListOf<WeatherItem>()
 
             var isFirstDay = true
             var previousDate = ""
-            weatherForecast.list.forEach { weatherData ->
+            room_data.list.forEach { weatherData ->
                 val currentDate = weatherData.dt_txt.substring(0, 10) // Extracting date without time
                 val currentTime = weatherData.dt_txt.substring(11) // Extracting time
 
@@ -246,13 +270,13 @@ class HomeFragment : Fragment() {
                             // If the language is English, translate the city name to Arabic
                             translateCityName(country.countryName) { translatedCityName ->
                                 // Update the location text view with the translated city name
-                                yourLocation.text = translatedCityName
+                               // yourLocation.text = translatedCityName
                                 //    yourLocation.invalidate()
                                 Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
                             }
                         }
                         "en" -> {
-                            yourLocation.text = country.countryName
+                         //   yourLocation.text = country.countryName
                             yourLocation.invalidate()
                             Log.i(TAG, "onViewCreated: the returned city when en : ${country.countryName}")
                         }
@@ -264,6 +288,7 @@ class HomeFragment : Fragment() {
                 )   //Ask Heba
             }
         }
+
     }
 
     override fun onStart() {
@@ -296,11 +321,11 @@ class HomeFragment : Fragment() {
 
     }
 
-    fun formatPressure(main : Main): String {
+    fun formatPressure(main : WeatherMain): String {
         return "${main.pressure} hPa"
     }
 
-    fun formatHumidity(main: Main): String {
+    fun formatHumidity(main: WeatherMain): String {
         return "${main.humidity}%"
     }
     fun formatCloudiness(clouds: Clouds): String {
@@ -314,13 +339,20 @@ class HomeFragment : Fragment() {
         return dateFormat.format(calendar.time)
     }
 
-    fun formatWindInMeterPerSec(wind: Wind): String {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getCurrentDateTimeFormatted(): String {
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return currentDateTime.format(formatter)
+    }
+
+    fun formatWindInMeterPerSec(wind: WindWeather): String {
         return "${String.format("%.2f", wind.speed)} m/s"
     }
     fun convertMetersPerSecondToMilesPerHour(mps: Double): Double {
         return mps * 2.23694
     }
-    fun formatWindInMilesPerHour(wind: Wind): String {
+    fun formatWindInMilesPerHour(wind: WindWeather): String {
         val speedInMetersPerSecond = wind.speed
         val speedInMilesPerHour = convertMetersPerSecondToMilesPerHour(speedInMetersPerSecond)
         return "${String.format("%.2f", speedInMilesPerHour)} mph"
@@ -362,12 +394,10 @@ class HomeFragment : Fragment() {
                         latitude  = location.latitude
                         Log.i(TAG, "onLocationResult: enter the gps location $locationSett")
 
-                        if(locationSett == "map"){
-                            weatherViewModel.getWeather(latitudeFromSett, longitudeFromSett, API_KEY,unitTemp,language)
+                        if(locationSett == "map"  && dateFromRoom != todayDate){
                             weatherViewModel.getWeatherForecast(latitudeFromSett,longitudeFromSett, API_KEY,unitTemp,language)
                             Log.i(TAG, "onLocationResult: enter the map location $longitudeFromSett")
-                        }else if (locationSett == "gps") {
-                            weatherViewModel.getWeather(latitude, longitude, API_KEY, unitTemp,language)
+                        }else if (locationSett == "gps"  && dateFromRoom != todayDate) {
                             weatherViewModel.getWeatherForecast(
                                 latitude,
                                 longitude,
@@ -433,5 +463,9 @@ class HomeFragment : Fragment() {
             }
     }
 
+    fun getDatePart(dateTimeString: String): String {
+        val parts = dateTimeString.split(" ")
+        return parts[0]
+    }
 
 }

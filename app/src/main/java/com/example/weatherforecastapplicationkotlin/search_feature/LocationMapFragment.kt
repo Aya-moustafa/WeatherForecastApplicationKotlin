@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.weatherforecastapplicationkotlin.MainActivity.isSearchOnMapOpenedFromSetting
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.WeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModel
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Country
@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale
 import androidx.navigation.fragment.findNavController
+import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -80,7 +81,11 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
             isSearchOnMapOpenedFromSetting = true
         }
         fromSetting = arguments?.getBoolean("fromSetting") ?: false
-        favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext())))
+        fromFavorite = arguments?.getBoolean("fromFavorite") ?: false
+
+        favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext()),
+            TodayWeatherLocalDataSource(requireContext())
+        ))
         fav_view_model = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
@@ -156,9 +161,13 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
                     val geocoder = Geocoder(requireContext(), Locale.getDefault())
                     try {
                         val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                        val addressesCountry = addresses?.get(0)?.countryName +" , "+addresses?.get(0)?.adminArea +" , "+ addresses?.get(0)?.featureName
+                        if (addresses != null) {
+                            Log.i(TAG, "onMapReady: The Address = ${addressesCountry}")
+                        }
                         val cityName = getCityName(addresses)
-                        if (!cityName.isNullOrEmpty()) {
-                            val country = Country(cityName, latLng.latitude, latLng.longitude)
+                        if (!cityName.isNullOrEmpty() && addressesCountry != null) {
+                            val country = Country(cityName,addressesCountry.toString(), latLng.latitude, latLng.longitude)
                             fav_view_model.insertProduct(country)
                             Toast.makeText(
                                 requireContext(),
@@ -188,7 +197,7 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
                 val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
                 val cityName = getCityName(addresses)
                 if (!cityName.isNullOrEmpty()) {
-                    val country = Country(cityName, latLng.latitude, latLng.longitude)
+                    val country = Country(cityName,addresses.toString(), latLng.latitude, latLng.longitude)
                     alertDialogAppear(country)
                 } else {
                     Toast.makeText(

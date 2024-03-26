@@ -22,7 +22,7 @@ class FavoritesViewModel(private val _irepo : WeatherRepository) : ViewModel() {
            getLocalPlaces()
     }
 
-    fun insertProduct (country: Country){
+   fun insertProduct (country: Country){
         viewModelScope.launch(Dispatchers.IO){
             _irepo.insertNewPlaceToFavorites(country)
         }
