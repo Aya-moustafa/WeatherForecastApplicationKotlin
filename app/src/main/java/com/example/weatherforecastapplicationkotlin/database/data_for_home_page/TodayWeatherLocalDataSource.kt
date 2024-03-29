@@ -20,4 +20,12 @@ class TodayWeatherLocalDataSource(context: Context) : ITodayWeatherLocalDataBase
     override suspend fun deleteTodayWeatherDeatils(weatherForeCast: WeatherForeCast) {
       dao.deleteTodayWeatherDeatils(weatherForeCast)
     }
+
+    override suspend fun clearAllWeatherData() {
+        dao.clearAllWeatherData()
+    }
+
+    override fun getRowCount(): Int {
+       return dao.getRowCount()
+    }
 }

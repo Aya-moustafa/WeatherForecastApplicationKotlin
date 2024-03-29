@@ -50,6 +50,7 @@ dependencies {
 
 //Glide
     implementation ("com.github.bumptech.glide:glide:4.13.0")
+    implementation("com.google.firebase:protolite-well-known-types:18.0.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0")
 //Retrofit
     implementation ("com.google.code.gson:gson:2.9.0")

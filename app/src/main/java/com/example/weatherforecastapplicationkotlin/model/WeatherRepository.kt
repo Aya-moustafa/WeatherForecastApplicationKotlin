@@ -58,4 +58,12 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localD
         homeWeatherLocalDataSource.deleteTodayWeatherDeatils(weatherForeCast)
     }
 
+    suspend fun ClearAllTodayWeatherDeatils () {
+        homeWeatherLocalDataSource.clearAllWeatherData()
+    }
+
+    suspend fun getRowCount() : Int {
+       return homeWeatherLocalDataSource.getRowCount()
+    }
+
 }

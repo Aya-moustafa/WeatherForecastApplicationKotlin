@@ -52,4 +52,9 @@
             android:id="@+id/action_settingFragment_to_searchOnMapFragment"
             app:destination="@id/searchOnMapFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/allNotificationsFragment"
+        android:name="com.example.weatherforecastapplicationkotlin.notification_feature.AllNotificationsFragment"
+        android:label="fragment_all_notifications"
+        tools:layout="@layout/fragment_all_notifications" />
 </navigation>

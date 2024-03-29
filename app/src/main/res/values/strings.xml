@@ -33,4 +33,8 @@
     <string name="wind_speed">Wind Speed</string>
     <string name="m_s">Meter/Sec</string>
     <string name="mile_hour">Mile/Hour</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="alarm">Alarm</string>
+    <string name="apply_btn">Apply</string>
 </resources>

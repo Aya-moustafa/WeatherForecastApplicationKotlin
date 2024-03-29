@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/background">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="402dp"
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/background">
+
+        <ImageButton
+            android:id="@+id/fromBtn"
+            android:layout_width="184dp"
+            android:layout_height="53dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/background"
+            android:elevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.002"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/my_custom_button" />
+
+        <ImageButton
+            android:id="@+id/toBtn"
+            android:layout_width="184dp"
+            android:layout_height="53dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/background"
+            android:elevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.026"
+            app:layout_constraintStart_toEndOf="@+id/fromBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/my_custom_button" />
+
+        <TextView
+            android:id="@+id/textViewfrom"
+            android:layout_width="153dp"
+            android:layout_height="37dp"
+            android:fontFamily="@font/monda"
+            android:gravity="center"
+            android:text="@string/from"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/fromBtn"
+            app:layout_constraintEnd_toEndOf="@+id/fromBtn"
+            app:layout_constraintHorizontal_bias="0.538"
+            app:layout_constraintStart_toStartOf="@+id/fromBtn"
+            app:layout_constraintTop_toTopOf="@+id/fromBtn"
+            app:layout_constraintVertical_bias="0.45" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="160dp"
+            android:layout_height="46dp"
+            android:fontFamily="@font/monda"
+            android:gravity="center"
+            android:text="@string/to"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/toBtn"
+            app:layout_constraintEnd_toEndOf="@+id/toBtn"
+            app:layout_constraintStart_toStartOf="@+id/toBtn"
+            app:layout_constraintTop_toTopOf="@+id/toBtn" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/from_card"
+            android:layout_width="176dp"
+            android:layout_height="85dp"
+            android:elevation="25dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="35dp"
+            app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+            app:layout_constraintEnd_toEndOf="@+id/fromBtn"
+            app:layout_constraintHorizontal_bias="0.55"
+            app:layout_constraintStart_toStartOf="@+id/fromBtn"
+            app:layout_constraintTop_toBottomOf="@+id/fromBtn"
+            app:layout_constraintVertical_bias="0.19999999">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/from_hour"
+                    android:layout_width="165dp"
+                    android:layout_height="43dp"
+                    android:fontFamily="@font/monda"
+                    android:gravity="center"
+                    android:text="textView"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.35000002" />
+
+                <TextView
+                    android:id="@+id/from_date"
+                    android:layout_width="168dp"
+                    android:layout_height="44dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/el_messiri_medium"
+                    android:gravity="center"
+                    android:text="textview2"
+                    android:textColor="#6C6A6A"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.75"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/to_card"
+            android:layout_width="176dp"
+            android:layout_height="85dp"
+            android:layout_marginBottom="18dp"
+            android:elevation="25dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="35dp"
+            app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+            app:layout_constraintEnd_toEndOf="@+id/toBtn"
+            app:layout_constraintHorizontal_bias="0.57"
+            app:layout_constraintStart_toStartOf="@+id/toBtn"
+            app:layout_constraintTop_toBottomOf="@+id/toBtn"
+            app:layout_constraintVertical_bias="0.36">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/to_hour"
+                    android:layout_width="165dp"
+                    android:layout_height="39dp"
+                    android:fontFamily="@font/monda"
+                    android:gravity="center"
+                    android:text="textView3"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.454"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.347" />
+
+                <TextView
+                    android:id="@+id/to_date"
+                    android:layout_width="160dp"
+                    android:layout_height="57dp"
+                    android:fontFamily="@font/el_messiri_medium"
+                    android:gravity="center"
+                    android:text="textView4"
+                    android:textColor="#6C6A6A"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="280dp"
+            android:layout_height="39dp"
+            android:layout_marginTop="184dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.35"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/radioButton"
+                android:layout_width="101dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/baloo_bhai"
+                android:gravity="center"
+                android:text="@string/alarm"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="176dp"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/baloo_bhai"
+                android:gravity="center"
+                android:text="@string/alerts"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </RadioGroup>
+
+        <ImageButton
+            android:id="@+id/applyBtn"
+            android:layout_width="227dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/background"
+            android:elevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.39"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+            app:srcCompat="@drawable/my_custom_button" />
+
+        <TextView
+            android:id="@+id/applyTxt"
+            android:layout_width="228dp"
+            android:layout_height="54dp"
+            android:fontFamily="@font/monda"
+            android:gravity="center"
+            android:text="@string/apply_btn"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/applyBtn"
+            app:layout_constraintEnd_toEndOf="@+id/applyBtn"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/applyBtn"
+            app:layout_constraintTop_toTopOf="@+id/applyBtn"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

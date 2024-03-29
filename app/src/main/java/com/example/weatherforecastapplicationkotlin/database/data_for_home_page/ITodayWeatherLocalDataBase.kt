@@ -18,4 +18,10 @@ interface ITodayWeatherLocalDataBase {
     @Delete
     suspend fun deleteTodayWeatherDeatils (weatherForeCast: WeatherForeCast)
 
+    @Query("DELETE FROM home_weather_details")
+    suspend fun clearAllWeatherData()
+
+    @Query("SELECT COUNT(*) FROM home_weather_details")
+    fun getRowCount(): Int
+
 }

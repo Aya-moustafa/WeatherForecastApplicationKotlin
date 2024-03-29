@@ -11,28 +11,36 @@ import com.example.weatherforecastapplicationkotlin.model.WeatherForeCast
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+
 
 class WeatherViewModel(private var _repo : WeatherRepository, val context : Context) : ViewModel() {
 
-    private var _weatherForecast : MutableLiveData<WeatherForeCast> = MutableLiveData<WeatherForeCast>()
-    val weatherForecast : LiveData<WeatherForeCast> = _weatherForecast
+    private var _weatherForecast : MutableSharedFlow<WeatherForeCast> = MutableSharedFlow<WeatherForeCast>(replay = 1)
+    val weatherForecast : SharedFlow<WeatherForeCast> = _weatherForecast
 
+   // private val _rowCountStateFlow = MutableStateFlow(0) // Initial value is 0
+   // val rowCountStateFlow: StateFlow<Int> = _rowCountStateFlow
 
     private var _weatherFromRoom : MutableLiveData<WeatherForeCast> = MutableLiveData<WeatherForeCast>()
     val weatherFromRoom : LiveData<WeatherForeCast> = _weatherFromRoom
 
-
     private var countrySharedPreference = context.getSharedPreferences("country",Context.MODE_PRIVATE)
 
 
-
-    init {
-        getHomeWeatherFromRoom()
-    }
-
     fun getWeatherForecast (lat: Double , lon: Double ,apiKey: String,units : String,lan:String){
         viewModelScope.launch(Dispatchers.IO) {
-            _weatherForecast.postValue(_repo.getWeatherForecast(lat,lon,apiKey,units,lan))
+            val weather = _repo.getWeatherForecast(lat,lon,apiKey,units,lan)
+            if(weather != null){
+                _weatherForecast.emit(weather)
+            }
         }
     }
 
@@ -59,6 +67,12 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
         }
     }
 
+    fun clearAll () {
+        viewModelScope.launch(Dispatchers.IO) {
+            _repo.ClearAllTodayWeatherDeatils()
+        }
+    }
+
     fun saveReturnCountryFromMap(country: Country) {
         with(countrySharedPreference.edit()){
             putString("cityName" , country.cityName)
@@ -66,6 +80,12 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
             putString("countryLat",country.latitude.toString())
             putString("countryLong",country.longtuide.toString())
             apply()
+        }
+    }
+
+    suspend fun returnRowCount(): Int {
+        return withContext(Dispatchers.IO) {
+            _repo.getRowCount()
         }
     }
 
