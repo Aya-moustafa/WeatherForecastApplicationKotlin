@@ -16,13 +16,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -33,6 +36,8 @@ import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingVie
 import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
+import com.example.weatherforecastapplicationkotlin.home_page.model.WeatherForeCastState
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Clouds
@@ -106,6 +111,8 @@ class HomeFragment : Fragment() {
      var countryFromRoom : String = ""
      var countryFromApi : String = ""
      private val PREF_KEY = "country_from_api"
+    lateinit var  progressBar: ProgressBar
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,7 +154,9 @@ class HomeFragment : Fragment() {
         UVTV         = view.findViewById(R.id.uvTxt)
         visibTV      = view.findViewById(R.id.visiTxt)
         weekly_forecast = view.findViewById(R.id.weekly_forecast_recycle)
-     if (isLocationEnabled()) {
+        progressBar  = view.findViewById(R.id.progressBar)
+
+        if (isLocationEnabled()) {
             if (checkPermissions()) {
                 getFreshLocation()
             } else {
@@ -157,7 +166,7 @@ class HomeFragment : Fragment() {
             enableLocationServices()
         }
         weatherFactory = WeatherViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(),
-            WeatherLocalDataSource(requireContext()), TodayWeatherLocalDataSource(requireContext())
+            WeatherLocalDataSource(requireContext()), TodayWeatherLocalDataSource(requireContext()), NotificationDeatilsLocalDataSource(requireContext())
         ),requireContext())
         weatherViewModel = ViewModelProvider(this,weatherFactory).get(WeatherViewModel::class.java)
         sharedFactory = SettingViewModelFactory(requireActivity().application)
@@ -183,8 +192,9 @@ class HomeFragment : Fragment() {
        // setLocationNameInUI()
         lifecycleScope.launch {
             weatherViewModel.weatherForecast.collect{ weatherForecast ->
-                Log.i(TAG, "onLocationResult: TESTTTTTTTTTT WHICH FIRST 2")
                 Log.i(TAG, "onViewCreated: The Returned Data From Api : ${weatherForecast}")
+                Log.i(TAG, "onViewCreated: The Returned city : ${weatherForecast.city.name}")
+
                 weatherForecast?.let {
                     Log.i(
                         TAG,
@@ -192,87 +202,117 @@ class HomeFragment : Fragment() {
                     )
                     countryFromApi = it.city.name
                     saveStringToSharedPreferences(countryFromApi)
+                  //  weatherViewModel.getHomeWeatherFromRoom()
                     Log.i(TAG, "onViewCreated:countryFro//mApi = $countryFromApi ")
-                    Log.i(TAG, "onViewCreated: before inserttt :")
-                    weatherViewModel.insertHomeWeatherDetails(it)
-                    weatherViewModel.getHomeWeatherFromRoom()
-                    Log.i(TAG, "onViewCreated: after inserttt :")
                 }
             }
 
         }
 
-        weatherViewModel.weatherFromRoom.observe(viewLifecycleOwner){
-               room_data ->
-            Log.i(TAG, "onLocationResult: TESTTTTTTTTTT WHICH FIRST 1")
-            dateFromRoom = getDatePart(room_data.list.get(0).dt_txt)
-             countryFromRoom = room_data.city.name
-            Log.i(TAG, "onViewCreated: countryFromRoom = $countryFromRoom")
-            Log.i(TAG, "onViewCreated:  The Returned Data From Room is ${dateFromRoom} ")
-               var today = room_data.list.get(0)
-               var main : WeatherMain = room_data.list.get(0).main
-              // if(locationSett == "gps") {
-                   yourLocation.text = room_data.city.name
-             //  }
-               temp.text =today.getTemperatureInInt().toString()
-               feelsLike.text   = main.feels_like.toString()
-               var weather : Weather = today.weather.get(0)
-               desc.text        = weather.description
-               val formattedDate = formatDate(today.dt)
-               date.text        = formattedDate
-               var wind : WindWeather = today.wind
-               Log.i("wind", "onViewCreated:${wind} ")
-               if(windSpeed == "Meter/Sec"){
-                   var formattedWind = formatWindInMeterPerSec(wind)
-                   windTV.text      = formattedWind+"m/s"
-               }else if (windSpeed == "Mile/Hour") {
-                   var formattedWind = formatWindInMilesPerHour(wind)
-                   windTV.text      = formattedWind+"mph"
+       lifecycleScope.launch {
+           repeatOnLifecycle(Lifecycle.State.STARTED) {
+               weatherViewModel.weatherFromRoom.collect{
+                   room_data ->
+                       when(room_data){
+                           is WeatherForeCastState.Loading -> {
+                               progressBar.visibility = View.VISIBLE
+                               weekly_forecast.visibility= View.GONE
+                           }is WeatherForeCastState.Success -> {
+                               progressBar.visibility = View.GONE
+                               weekly_forecast.visibility= View.VISIBLE
+                               Log.i(TAG, "onLocationResult: TESTTTTTTTTTT WHICH FIRST 1")
+                               dateFromRoom = getDatePart(room_data.data.list.get(0).dt_txt)
+                               countryFromRoom = room_data.data.city.name
+                               Log.i(TAG, "onViewCreated: countryFromRoom = $countryFromRoom")
+                               Log.i(TAG, "onViewCreated:  The Returned Data From Room is ${dateFromRoom} ")
+                               var today = room_data.data.list.get(0)
+                               var main: WeatherMain = room_data.data.list.get(0).main
+                               // if(locationSett == "gps") {
+                               yourLocation.text = room_data.data.city.name
+                               //  }
+                               if(unitTemp == "standard"){
+                                   temp.text = today.getTemperatureInInt().toString()
+                                   feelsLike.text = main.feels_like.toString()
+                               }else if (unitTemp == "imperial") {
+                                   temp.text = kelvinToFahrenheit(today.main.temp)?.toInt().toString()
+                                   feelsLike.text = kelvinToFahrenheit(main.feels_like).toString()
+                               }else if (unitTemp == "metric") {
+                                   temp.text = kelvinToCelsius(today.main.temp)?.toInt().toString()
+                                   feelsLike.text = kelvinToCelsius(main.feels_like).toString()
+                               }
+                               var weather: Weather = today.weather.get(0)
+                               desc.text = weather.description
+                               val formattedDate = formatDate(today.dt)
+                               date.text = formattedDate
+                               var wind: WindWeather = today.wind
+                               Log.i("wind", "onViewCreated:${wind} ")
+                               if (windSpeed == "Meter/Sec") {
+                                   var formattedWind = formatWindInMeterPerSec(wind)
+                                   windTV.text = formattedWind + "m/s"
+                               } else if (windSpeed == "Mile/Hour") {
+                                   var formattedWind = formatWindInMilesPerHour(wind)
+                                   windTV.text = formattedWind + "mph"
+                               }
+                               var clouds: Clouds = today.clouds
+                               var formatedClouds = formatCloudiness(clouds)
+                               cloudTV.text = formatedClouds
+                               var formattedHumidity = formatHumidity(main)
+                               humidityTV.text = formattedHumidity
+                               var formattedPressure = formatPressure(main)
+                               presstureTV.text = formattedPressure
+                               var UV = today.sys.pod
+                               UVTV.text = UV
+                               visibTV.text = today.visibility.toString() + " m"
+                               val url_img = "https://openweathermap.org/img/wn/" + weather.icon + ".png"
+                               Glide.with(this@HomeFragment).load(url_img)
+                                   .apply(
+                                       RequestOptions()
+                                       //  .placeholder(R.drawable.placeholder) // don't forget the placeholder image
+                                       //  .error(R.drawable.placeholder)
+                                   )
+                                   .into(current_temp_img)
+                               val filteredList = mutableListOf<WeatherItem>()
+
+                               var isFirstDay = true
+                               var previousDate = ""
+                               room_data.data.list.forEach { weatherData ->
+                                   val currentDate =
+                                       weatherData.dt_txt.substring(0, 10) // Extracting date without time
+                                   val currentTime = weatherData.dt_txt.substring(11) // Extracting time
+
+                                   // Exclude the first day
+                                   if (isFirstDay) {
+                                       isFirstDay = false
+                                       previousDate = currentDate
+                                       return@forEach
+                                   }
+
+                                   // Add data entry if time is 00:00:00 or it's a new day
+                                   if (currentTime == "00:00:00" || currentDate != previousDate) {
+                                       filteredList.add(weatherData)
+                                       previousDate = currentDate
+
+                                   }
+                               }
+
+                               adapter.submitList(filteredList)
+                               Log.i(
+                                   TAG,
+                                   "onViewCreated: The Weather Forecast For 5 days left is: $filteredList"
+                               )
+                           }is WeatherForeCastState.Failure -> {
+                               weekly_forecast.visibility = View.GONE
+                               progressBar.visibility = View.GONE
+                               Toast.makeText(
+                                   requireContext(),
+                                   "Error loading data!",
+                                   Toast.LENGTH_SHORT
+                               ).show()
+                          }
+                       }
                }
-               var clouds : Clouds = today.clouds
-               var formatedClouds = formatCloudiness(clouds)
-               cloudTV.text = formatedClouds
-               var formattedHumidity = formatHumidity(main)
-               humidityTV.text   = formattedHumidity
-               var formattedPressure = formatPressure(main)
-               presstureTV.text  = formattedPressure
-               var UV  = today.sys.pod
-               UVTV.text = UV
-               visibTV.text = today.visibility.toString()+" m"
-               val url_img = "https://openweathermap.org/img/wn/" + weather.icon + ".png"
-               Glide.with(this@HomeFragment).load(url_img)
-                   .apply(
-                       RequestOptions()
-                       //  .placeholder(R.drawable.placeholder) // don't forget the placeholder image
-                       //  .error(R.drawable.placeholder)
-                   )
-                   .into(current_temp_img)
-               val filteredList = mutableListOf<WeatherItem>()
-
-               var isFirstDay = true
-               var previousDate = ""
-               room_data.list.forEach { weatherData ->
-                   val currentDate = weatherData.dt_txt.substring(0, 10) // Extracting date without time
-                   val currentTime = weatherData.dt_txt.substring(11) // Extracting time
-
-                   // Exclude the first day
-                   if (isFirstDay) {
-                       isFirstDay = false
-                       previousDate = currentDate
-                       return@forEach
-                   }
-
-                   // Add data entry if time is 00:00:00 or it's a new day
-                   if (currentTime == "00:00:00" || currentDate != previousDate) {
-                       filteredList.add(weatherData)
-                       previousDate = currentDate
-
-                   }
-               }
-
-               adapter.submitList(filteredList)
-               Log.i(TAG, "onViewCreated: The Weather Forecast For 5 days left is: $filteredList")
            }
+       }
         lifecycleScope.launch {
             settingViewModel.settingsFlow.collectLatest { setting ->
                 unitTemp = setting.unitsTemp
@@ -313,10 +353,10 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             rowCount = weatherViewModel.returnRowCount()
             Log.i(TAG, "onStart: rowCounts = $rowCount")
-            if (rowCount != 0) {
+           /* if (rowCount != 0) {
                 Log.i(TAG, "onStart: inside condition rowCounts")
                 weatherViewModel.getHomeWeatherFromRoom()
-            }
+            }*/
         }
     }
 
@@ -333,6 +373,13 @@ class HomeFragment : Fragment() {
     }
     fun formatCloudiness(clouds: Clouds): String {
         return "${clouds.all}%"
+    }
+    fun kelvinToCelsius(kelvin: Double): Double? {
+        return (kelvin - 273.15)
+    }
+
+    fun kelvinToFahrenheit(kelvin: Double): Double? {
+        return (kelvin * 9/5 - 459.67)
     }
     fun formatDate(timestamp: Long): String {
         val calendar = Calendar.getInstance().apply {
@@ -389,13 +436,15 @@ class HomeFragment : Fragment() {
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             },
             object : LocationCallback() {
+                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onLocationResult(locationResult: LocationResult) {
                     super.onLocationResult(locationResult)
                     val location = locationResult.lastLocation
                     Log.i(TAG, "getFreshLocation: inside first condition function $location")
                     if (location != null) {
                         Log.i(TAG, "getFreshLocation: inside first condition function")
-
+                        todayDate = getCurrentDateTimeFormatted()
+                        Log.i(TAG, "onViewCreated: Current Date is $todayDate")
                         longitude = location.longitude
                         latitude  = location.latitude
 
@@ -404,41 +453,11 @@ class HomeFragment : Fragment() {
                             rowCount = weatherViewModel.returnRowCount()
                             Log.i(TAG, "getFreshLocation: The Rows Number : $rowCount and countryFromSharedApi $countryFromApi")
                            // weatherViewModel.getHomeWeatherFromRoom()
-                            if (rowCount == 0) {
-                                Log.i(TAG, "onLocationResult: inside if row==0")
-                                if(locationSett == "map"){
-                                    weatherViewModel.getWeatherForecast(latitudeFromSett,longitudeFromSett, API_KEY,unitTemp,language)
-                                    Log.i(TAG, "onLocationResult: enter the map location after get data $longitudeFromSett")
-                                }else if (locationSett == "gps") {
-                                    weatherViewModel.getWeatherForecast(
-                                        latitude,
-                                        longitude,
-                                        API_KEY,
-                                        unitTemp,language
-                                    )
-                                    Log.i(TAG, "onLocationResult: enter the gps location after get data $language")
-                                }
-                            } else {
-                                Log.i(TAG, "onLocationResult: inside if row!=0")
-                                if(locationSett == "map"  ){
-                                    if( dateFromRoom != todayDate ){
-                                        Log.i(TAG, "onLocationResult: TESTTTTTTTTTT WHICH FIRST 4")
-                                        Log.i(TAG, "onLocationResult: inside map at first condition dateFromRoom = $dateFromRoom ,, todayDate = $todayDate ")
-                                        weatherViewModel.getWeatherForecast(latitudeFromSett,longitudeFromSett, API_KEY,unitTemp,language)
-                                    }else if (dateFromRoom == todayDate && countryFromRoom != countryFromApi){
-                                        Log.i(TAG, "onLocationResult: inside map at second condition countryFromRoom = $countryFromRoom ,, countryFromApi = $countryFromApi ")
-                                        weatherViewModel.getWeatherForecast(latitudeFromSett,longitudeFromSett, API_KEY,unitTemp,language)
-                                       // weatherViewModel.clearAll()
-                                    }
-                                }else if (locationSett == "gps") {
-                                    Log.i(TAG, "onLocationResult: if is dateFromRoom != todayDate  DATE FROM ROOM $dateFromRoom")
-                                   //  if(dateFromRoom != todayDate) {
-                                         weatherViewModel.getWeatherForecast(latitude, longitude, API_KEY, unitTemp,language)
-                                        // weatherViewModel.clearAll() //first
-                                         Log.i(TAG, "onLocationResult: enter when if is dateFromRoom != todayDate $language")
-                                 //   }
-                                }
-                            }
+                                   if(locationSett == "gps"){
+                                       weatherViewModel.fetchDataofWeatherForeCast(latitude,longitude, API_KEY ,"standard" , language,todayDate)
+                                   }else if (locationSett == "map"){
+                                       weatherViewModel.fetchDataofWeatherForeCast(latitudeFromSett,longitudeFromSett, API_KEY ,"standard" , language,todayDate)
+                                   }
                         }
                         Log.i(TAG, "onLocationResult: TESTTTTTTTTTT WHICH FIRST 1")
                         Log.i(TAG, "onLocationResult: <<<<<<<<<<<<<<<<<<<<<<<<<<The Unit Temp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $unitTemp and longFromSett $longitudeFromSett")

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModel
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Country
@@ -47,7 +48,8 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
         mapBtnToAdd = view.findViewById(R.id.fab_add)
         recycleView = view.findViewById(R.id.fav_places_recycle)
         favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext()),
-            TodayWeatherLocalDataSource(requireContext())
+            TodayWeatherLocalDataSource(requireContext()),
+            NotificationDeatilsLocalDataSource(requireContext())
         ))
 
         viewModel = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)

@@ -25,10 +25,10 @@
 
         <TextView
             android:id="@+id/fromD_name"
-            android:layout_width="332dp"
-            android:layout_height="43dp"
+            android:layout_width="134dp"
+            android:layout_height="42dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="32dp"
             android:gravity="top"
             android:paddingStart="8dp"
             android:paddingTop="8dp"
@@ -40,42 +40,71 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.082"
+            app:layout_constraintStart_toEndOf="@+id/imageView8" />
+
+        <TextView
+            android:id="@+id/toD_name"
+            android:layout_width="134dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="top"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
+            android:text="TextView"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.715"
             app:layout_constraintStart_toEndOf="@+id/imageView8" />
 
         <ImageView
             android:id="@+id/imageView8"
-            android:layout_width="64dp"
-            android:layout_height="89dp"
+            android:layout_width="34dp"
+            android:layout_height="39dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/favplacesphotoroom" />
+            app:layout_constraintVertical_bias="0.512"
+            app:srcCompat="@drawable/alarmscheduleicon" />
 
         <TextView
             android:id="@+id/fromTime_name"
-            android:layout_width="326dp"
-            android:layout_height="35dp"
+            android:layout_width="113dp"
+            android:layout_height="29dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/el_messiri_medium"
             android:text="TextView"
+            android:paddingStart="10dp"
             android:textColor="#59595A"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.85"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/fromD_name"
             app:layout_constraintTop_toBottomOf="@+id/fromD_name"
             app:layout_constraintVertical_bias="0.0" />
 
-        <ImageView
-            android:id="@+id/delete"
-            android:layout_width="31dp"
-            android:layout_height="29dp"
-            android:layout_marginEnd="16dp"
+        <TextView
+            android:id="@+id/toT_name"
+            android:layout_width="119dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/el_messiri_medium"
+            android:paddingStart="10dp"
+            android:text="TextView"
+            android:textColor="#59595A"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.509"
-            app:srcCompat="@drawable/removeicon" />
+            app:layout_constraintHorizontal_bias="0.635"
+            app:layout_constraintStart_toStartOf="@+id/fromD_name"
+            app:layout_constraintTop_toBottomOf="@+id/fromD_name"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

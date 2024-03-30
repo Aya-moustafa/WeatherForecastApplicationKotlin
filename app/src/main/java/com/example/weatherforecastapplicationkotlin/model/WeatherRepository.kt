@@ -3,10 +3,12 @@ package com.example.weatherforecastapplicationkotlin.model
 import android.util.Log
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
+import com.example.weatherforecastapplicationkotlin.notification_feature.model.NotificationData
 import kotlinx.coroutines.flow.Flow
 
-class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localDataSource : WeatherLocalDataSource, val homeWeatherLocalDataSource : TodayWeatherLocalDataSource) {
+class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localDataSource : WeatherLocalDataSource, val homeWeatherLocalDataSource : TodayWeatherLocalDataSource , val notificationsDate : NotificationDeatilsLocalDataSource) {
 
     companion object {
         @Volatile
@@ -14,10 +16,11 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localD
         fun getInstance(
             remoteDataSource: WeatherRemoteDataSource ,
             localDataSource: WeatherLocalDataSource,
-            weatherLocalDataSource: TodayWeatherLocalDataSource
+            weatherLocalDataSource: TodayWeatherLocalDataSource,
+            notificationsDate: NotificationDeatilsLocalDataSource
         ): WeatherRepository {
             return instance ?: synchronized(this) {
-                instance ?: WeatherRepository(remoteDataSource,localDataSource,weatherLocalDataSource).also { instance = it }
+                instance ?: WeatherRepository(remoteDataSource,localDataSource,weatherLocalDataSource,notificationsDate).also { instance = it }
             }
         }
     }
@@ -64,6 +67,17 @@ class WeatherRepository(val remoteDataSource: WeatherRemoteDataSource,val localD
 
     suspend fun getRowCount() : Int {
        return homeWeatherLocalDataSource.getRowCount()
+    }
+
+    suspend fun getAllNotificationsDate() : Flow<List<NotificationData>> {
+        return notificationsDate.getAllNotifiData()
+    }
+
+    suspend fun insertDate(notification : NotificationData){
+        notificationsDate.insertDate(notification)
+    }
+    suspend fun deleteDate(notification : NotificationData){
+        notificationsDate.deleteDate(notification)
     }
 
 }

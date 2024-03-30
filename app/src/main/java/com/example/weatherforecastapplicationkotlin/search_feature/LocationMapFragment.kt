@@ -40,6 +40,7 @@ import java.io.IOException
 import java.util.Locale
 import androidx.navigation.fragment.findNavController
 import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -84,7 +85,8 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
         fromFavorite = arguments?.getBoolean("fromFavorite") ?: false
 
         favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext()),
-            TodayWeatherLocalDataSource(requireContext())
+            TodayWeatherLocalDataSource(requireContext()),
+            NotificationDeatilsLocalDataSource(requireContext())
         ))
         fav_view_model = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment

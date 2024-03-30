@@ -1,11 +1,13 @@
-package com.example.weatherforecastapplicationkotlin.notification_feature
+package com.example.weatherforecastapplicationkotlin.notification_feature.view
 
 import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,44 +15,69 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
 import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
+import com.example.weatherforecastapplicationkotlin.favorites.view.FavoritePlacesListAdapter
+import com.example.weatherforecastapplicationkotlin.home_page.model.WeatherForeCastState
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
+import com.example.weatherforecastapplicationkotlin.model.Clouds
+import com.example.weatherforecastapplicationkotlin.model.Weather
+import com.example.weatherforecastapplicationkotlin.model.WeatherItem
+import com.example.weatherforecastapplicationkotlin.model.WeatherMain
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.WindWeather
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
+import com.example.weatherforecastapplicationkotlin.notification_feature.model.NotificationData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class AllNotificationsFragment : Fragment() {
+class AllNotificationsFragment : Fragment(){
     private final var TAG : String  = "AllNotificationsFragment"
     private val KEY_PREF = "date_to_notification"
     private val KEY_PREF2 = "time_to_notification"
+    private val KEY_FD = "From_Date"
+    private val KEY_FT = "From_Time"
+    lateinit var adapter: NotificationListAdapter
     lateinit var notifiRecycler : RecyclerView
     lateinit var notBtnToAdd : FloatingActionButton
     lateinit var dialog: AlertDialog
     lateinit var notificationData: NotificationData
     lateinit  var weatherViewModel: WeatherViewModel
     lateinit var  weatherFactory: WeatherViewModelFactory
-    private var fromD : String = ""
-    private var fromT : String = ""
-    private var toD : String = ""
-    private var toT : String = ""
-    private var status : String = "notification"
+     var fromD : String = ""
+     var fromT : String = ""
+     var toD : String = ""
+     var toT : String = ""
+     var status : String = "notification"
     var weather_description : String = ""
     var date_in_room : String = ""
+    lateinit var  progressBar: ProgressBar
+    private var notificationIdCounter = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -67,6 +94,7 @@ class AllNotificationsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         notifiRecycler= view.findViewById(R.id.notifications_recycle)
         notBtnToAdd= view.findViewById(R.id.fab_add_not)
+        progressBar  = view.findViewById(R.id.progressBarNoti)
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         val view = layoutInflater.inflate(R.layout.custom_dialog, null)
@@ -84,14 +112,20 @@ class AllNotificationsFragment : Fragment() {
         weatherFactory = WeatherViewModelFactory(
             WeatherRepository.getInstance(
                 WeatherRemoteDataSource.getInstance(),
-            WeatherLocalDataSource(requireContext()), TodayWeatherLocalDataSource(requireContext())
+            WeatherLocalDataSource(requireContext()), TodayWeatherLocalDataSource(requireContext()),
+                NotificationDeatilsLocalDataSource(requireContext())
         ),requireContext())
         weatherViewModel = ViewModelProvider(this,weatherFactory).get(WeatherViewModel::class.java)
         applyBtn.setOnClickListener {
            dialog.dismiss()
-           scheduleNotification(toDate,toHour)
+           scheduleNotification(toDate,toHour,fromDate,fromHour)
            weatherViewModel.getHomeWeatherFromRoom()
+           weatherViewModel.getNotifiDetails()
         }
+        adapter = NotificationListAdapter(requireContext())
+        val layoutManager = LinearLayoutManager(context,RecyclerView.VERTICAL,false)
+        notifiRecycler.adapter = adapter
+        notifiRecycler.layoutManager = layoutManager
 
         builder.setView(view)
         dialog = builder.create()
@@ -107,35 +141,65 @@ class AllNotificationsFragment : Fragment() {
         toBtn.setOnClickListener {
             showDatePicker(toDate, toHour)
         }
-        setData (fromDate,fromHour,toDate,toHour)
         lifecycleScope.launch {
-            weatherViewModel.weatherFromRoom.observe(viewLifecycleOwner){
-                 weather_deatils ->
-               // val dateFormat = SimpleDateFormat("dd MMM, yyyy hh:mm a", Locale.getDefault())
-                val dateFormatSharedPref = SimpleDateFormat("dd MMM, yyyy", Locale.ENGLISH)
-                val dateFormatRoom = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-                Log.i(TAG, "onViewCreated: $weather_deatils")
-                date_in_room = weather_deatils.list.get(0).dt_txt
-               // dateFormat.parse(date_in_room)
-                Log.i(TAG, "onViewCreated: date_in_room : $date_in_room")
-                val date_picker = getDateFromSharedPreferences()
-                Log.i(TAG, "onViewCreated: date_in_Shared : $date_picker ")
-                val date_pickerFormated = convertDateFormat(date_picker)
-                Log.i(TAG, "onViewCreated: date_in_Shared after formatted : $date_pickerFormated")
-                weather_description = weather_deatils.list.get(0).weather.get(0).description
-
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                weatherViewModel.weatherFromRoom.collect{
+                        weather_deatils ->
+                    when(weather_deatils){
+                        is WeatherForeCastState.Loading -> {
+                            progressBar.visibility = View.VISIBLE
+                            notifiRecycler.visibility= View.GONE
+                        }is WeatherForeCastState.Success -> {
+                            progressBar.visibility = View.GONE
+                            notifiRecycler.visibility= View.VISIBLE
+                            val dateFormatSharedPref = SimpleDateFormat("dd MMM, yyyy", Locale.ENGLISH)
+                            val dateFormatRoom = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+                            Log.i(TAG, "onViewCreated: $weather_deatils")
+                            date_in_room = weather_deatils.data.list.get(0).dt_txt
+                            // dateFormat.parse(date_in_room)
+                            Log.i(TAG, "onViewCreated: date_in_room : $date_in_room")
+                            val date_picker = getDateFromSharedPreferences()
+                            Log.i(TAG, "onViewCreated: date_in_Shared : $date_picker ")
+                            val date_pickerFormated = convertDateFormat(date_picker)
+                            Log.i(TAG, "onViewCreated: date_in_Shared after formatted : $date_pickerFormated")
+                            weather_description = weather_deatils.data.list.get(0).weather.get(0).description
+                            setData (fromDate,fromHour,toDate,toHour)
+                        }is WeatherForeCastState.Failure -> {
+                            notifiRecycler.visibility = View.GONE
+                            progressBar.visibility = View.GONE
+                            Toast.makeText(
+                                requireContext(),
+                                "Error loading data!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+     //   setData (fromDate,fromHour,toDate,toHour)
+        lifecycleScope.launch {
+            weatherViewModel.notificationsDate.collect{
+                dates ->
+                Log.i(TAG, "onViewCreated: AllDatesInRoom : dates")
+                adapter.submitList(dates)
+            }
+        }
+        weatherViewModel.notificationIdToDelete.observe(viewLifecycleOwner) { notificationId ->
+            notificationId?.let {
+                deleteNotification(notificationId)
             }
         }
     }
-
-
     private fun setData(fromDate: TextView, fromHour: TextView, toDate: TextView, toHour: TextView) {
-        fromD = fromDate.text.toString()
-        fromT = fromHour.text.toString()
-        toD   = toDate.text.toString()
-        toT   = toHour.text.toString()
+        fromD = getFDateFromSharedPreferences()
+        fromT = getFTimeFromSharedPreferences()
+        toD = getDateFromSharedPreferences()
+        toT = getTimeFromSharedPreferences()
         Log.i(TAG, "onViewCreated: toD = $toD , toT = $toT")
-        notificationData = NotificationData(fromD,fromT,toD,toT,status)
+        notificationData = NotificationData(fromD, fromT, toD, toT, status)
+        weatherViewModel.insertNewDate(notificationData)
+        //   weatherViewModel.getNotifiDetails()
         Log.i(TAG, "onViewCreated: The notificationData is = $notificationData")
     }
 
@@ -161,18 +225,26 @@ class AllNotificationsFragment : Fragment() {
         datePickerDialog.show()
     }
 
-    private fun scheduleNotification(toDate: TextView, toHour: TextView) {
+    private fun scheduleNotification(toDate: TextView, toHour: TextView,fromDate: TextView , fromHour: TextView) {
         val dateFormat = SimpleDateFormat("dd MMM, yyyy hh:mm a", Locale.getDefault())
         val date =dateFormat.parse("${toDate.text} ${toHour.text}")
-        saveStringToSharedPreferences("${toDate.text}","${toHour.text}")
+        saveStringToSharedPreferences("${toDate.text}","${toHour.text}" , "${fromDate.text}" ,"${fromHour.text}" )
         Log.i(TAG, "scheduleNotification:${toDate.text} ${toHour.text} ")
+        val notificationId = generateNotificationId()
         val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(requireContext(),NotificationReceiver::class.java)
+        val intent = Intent(requireContext(), NotificationReceiver::class.java)
+        intent.putExtra("notificationId", notificationId)
         val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        Log.i(TAG, "scheduleNotification:${date.time} ")
         alarmManager.set(AlarmManager.RTC_WAKEUP,date.time ,pendingIntent)
         Toast.makeText(requireContext(),"Notification Success",Toast.LENGTH_LONG).show()
         Log.i(TAG, "scheduleNotification: Time = ${date}")
-        NotificationReceiver.getDescriptionOfWeather(weather_description)
+      //  NotificationReceiver.getDescriptionOfWeather(weather_description)
+     //   weatherViewModel.deleteOldDate(notificationData)
+    }
+
+    private fun generateNotificationId(): Int {
+        return notificationIdCounter++
     }
 
     private fun showTimePicker(timeView: TextView) {
@@ -222,11 +294,14 @@ class AllNotificationsFragment : Fragment() {
         return timeFormat.format(currentTime)
     }
 
-    private fun saveStringToSharedPreferences(date: String , time:String) {
+    private fun saveStringToSharedPreferences(date: String , time:String, fromDate :String , fromTime : String) {
         val sharedPreferences = requireActivity().getSharedPreferences("date_picker",Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString(KEY_PREF, date)
         editor.putString(KEY_PREF2,time)
+        editor.putString(KEY_FD,fromDate)
+        editor.putString(KEY_FT,fromTime)
+
         editor.apply()
     }
 
@@ -237,6 +312,14 @@ class AllNotificationsFragment : Fragment() {
     private fun getTimeFromSharedPreferences(): String {
         val sharedPreferences = requireActivity().getSharedPreferences("date_picker",Context.MODE_PRIVATE)
         return sharedPreferences.getString(KEY_PREF2,"")?: ""
+    }
+    private fun getFDateFromSharedPreferences(): String {
+        val sharedPreferences = requireActivity().getSharedPreferences("date_picker",Context.MODE_PRIVATE)
+        return sharedPreferences.getString(KEY_FD, "") ?: ""
+    }
+    private fun getFTimeFromSharedPreferences(): String {
+        val sharedPreferences = requireActivity().getSharedPreferences("date_picker",Context.MODE_PRIVATE)
+        return sharedPreferences.getString(KEY_FT,"")?: ""
     }
 
     fun convertDateFormat(inputDate: String): String {
@@ -249,5 +332,30 @@ class AllNotificationsFragment : Fragment() {
 
         // Format the parsed date into the desired output format
         return outputDateFormat.format(date)
+    }
+
+    private fun scheduleWorkManager(notificationId: Int) {
+        val inputData = workDataOf("notificationId" to notificationId)
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+            .build()
+
+        val deleteNotificationWorkRequest =
+            OneTimeWorkRequestBuilder<DeleteNotitificationWorker>()
+                .setInputData(inputData)
+                .setConstraints(constraints)
+                .build()
+
+        WorkManager.getInstance(requireContext()).enqueue(deleteNotificationWorkRequest)
+    }
+
+
+    fun deleteNotification(notificationId: Int) {
+
+        val notificationData = adapter.getItem(notificationId)
+        if (notificationData != null) {
+            weatherViewModel.deleteOldDate(notificationData)
+        }
     }
 }

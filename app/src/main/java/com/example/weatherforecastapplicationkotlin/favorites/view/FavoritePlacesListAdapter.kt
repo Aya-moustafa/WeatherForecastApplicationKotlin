@@ -32,10 +32,10 @@ class FavoritePlacesListAdapter(private var context: Context,private var deleteL
     }
 
     inner class FavWeatherViewHolder(private val layout: View) : RecyclerView.ViewHolder(layout) {
-         val country: TextView = layout.findViewById(R.id.country_name)
-        val placeName: TextView = layout.findViewById(R.id.city_name)
+         val country: TextView = layout.findViewById(R.id.fromD_name)
+        val placeName: TextView = layout.findViewById(R.id.fromTime_name)
         val delete : ImageView = layout.findViewById(R.id.delete)
-        val placeCard : CardView= layout.findViewById(R.id.place_card)
+        val placeCard : CardView= layout.findViewById(R.id.place_card_noti)
     }
 
     companion object {
