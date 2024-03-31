@@ -4,4 +4,5 @@ import com.example.weatherforecastapplicationkotlin.model.Country
 
 interface OnDeleteFavClickListener {
     fun onClicktodelete(country: Country)
+    fun onItemClick(country: Country)
 }

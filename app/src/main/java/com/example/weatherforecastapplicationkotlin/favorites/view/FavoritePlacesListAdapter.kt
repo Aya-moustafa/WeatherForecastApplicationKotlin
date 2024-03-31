@@ -1,19 +1,22 @@
 package com.example.weatherforecastapplicationkotlin.favorites.view
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.navigation.fragment.findNavController
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.model.Country
 
-class FavoritePlacesListAdapter(private var context: Context,private var deleteListener : (Country) -> Unit) : ListAdapter<Country, FavoritePlacesListAdapter.FavWeatherViewHolder>(UserDiffCallback()) {
+class FavoritePlacesListAdapter(private var context: Context,private var deleteListener : (Country) -> Unit,private var clickItem : (Country) -> Unit) : ListAdapter<Country, FavoritePlacesListAdapter.FavWeatherViewHolder>(UserDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavWeatherViewHolder {
         val inflater = LayoutInflater.from(context)
@@ -27,6 +30,9 @@ class FavoritePlacesListAdapter(private var context: Context,private var deleteL
         holder.placeName.text = country.cityName
         holder.delete.setOnClickListener{
             deleteListener(country)
+        }
+        holder.placeName.setOnClickListener {
+            clickItem(country)
         }
 
     }

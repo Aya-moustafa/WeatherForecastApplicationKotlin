@@ -24,7 +24,14 @@
         tools:layout="@layout/fragment_favorites" >
         <action
             android:id="@+id/action_favoritesFragment_to_searchOnMapFragment"
-            app:destination="@id/searchOnMapFragment" />
+            app:destination="@id/searchOnMapFragment"
+            app:popUpTo="@id/favoritesFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_favoritesFragment_to_favoriteDetailsFragment"
+            app:destination="@id/favoriteDetailsFragment"
+            app:popUpTo="@id/favoritesFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/searchOnMapFragment"
@@ -57,4 +64,16 @@
         android:name="com.example.weatherforecastapplicationkotlin.notification_feature.view.AllNotificationsFragment"
         android:label="fragment_all_notifications"
         tools:layout="@layout/fragment_all_notifications" />
+    <fragment
+        android:id="@+id/favoriteDetailsFragment"
+        android:name="com.example.weatherforecastapplicationkotlin.favorites.view.FavoriteDetailsFragment"
+        android:label="fragment_favorite_details"
+        tools:layout="@layout/fragment_favorite_details" >
+        <argument
+            android:name="fav_country"
+            app:argType="com.example.weatherforecastapplicationkotlin.model.Country" />
+        <argument
+            android:name="setting_data"
+            app:argType="com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions" />
+    </fragment>
 </navigation>

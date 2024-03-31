@@ -1,5 +1,44 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.2.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.22" apply false
+    id("com.android.application") version "8.2.0" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.10" apply false
+    // id("androidx.navigation.safeargs.kotlin")
 }
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        val nav_version = "2.7.7"
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
+    }
+}
+
+// Define dependencies
+ext {
+    // App dependencies
+    val androidXVersion = "1.0.0"
+    val androidXTestCoreVersion = "1.4.0"
+    val androidXTestExtKotlinRunnerVersion = "1.1.3"
+    val androidXTestRulesVersion = "1.2.0"
+    val androidXAnnotations = "1.3.0"
+    val appCompatVersion = "1.4.0"
+    val archLifecycleVersion = "2.4.0"
+    val archTestingVersion = "2.1.0"
+    val coroutinesVersion = "1.5.2"
+    val cardVersion = "1.0.0"
+    val dexMakerVersion = "2.12.1"
+    val espressoVersion = "3.4.0"
+    val fragmentKtxVersion = "1.4.0"
+    val hamcrestVersion = "1.3"
+    val junitVersion = "4.13.2"
+    val materialVersion = "1.4.0"
+    val recyclerViewVersion = "1.2.1"
+    val robolectricVersion = "4.5.1"
+    val rulesVersion = "1.0.1"
+    val swipeRefreshLayoutVersion = "1.1.0"
+    val timberVersion = "4.7.1"
+    val truthVersion = "1.1.2"
+}
+

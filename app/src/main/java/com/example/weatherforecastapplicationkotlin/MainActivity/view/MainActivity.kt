@@ -3,6 +3,7 @@ package com.example.weatherforecastapplicationkotlin.MainActivity.view
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -13,9 +14,13 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.weatherforecastapplicationkotlin.R
+import com.example.weatherforecastapplicationkotlin.favorites.view.FavoritesFragment
+import com.example.weatherforecastapplicationkotlin.home_page.view.HomeFragment
+import com.example.weatherforecastapplicationkotlin.notification_feature.view.AllNotificationsFragment
+import com.example.weatherforecastapplicationkotlin.setting.view.SettingFragment
 import com.google.android.material.navigation.NavigationView
 
- class MainActivity : AppCompatActivity()  {
+ class MainActivity : AppCompatActivity()   {
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -38,6 +43,6 @@ import com.google.android.material.navigation.NavigationView
         }
         navController = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigationView, navController)
-
     }
+
 }

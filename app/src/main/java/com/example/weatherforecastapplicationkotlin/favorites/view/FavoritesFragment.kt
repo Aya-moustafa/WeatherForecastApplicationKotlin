@@ -17,10 +17,16 @@ import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.
 import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModel
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModelFactory
+import com.example.weatherforecastapplicationkotlin.home_page.view.WeeklyForecastListAdapter
 import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
+import com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions
+import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
+import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
@@ -30,6 +36,13 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
     lateinit var adapter: FavoritePlacesListAdapter
     lateinit var viewModel : FavoritesViewModel
     lateinit  var favFactory : FavoritesViewModelFactory
+    lateinit  var settingViewModel: SettingViewMode
+    lateinit var  sharedFactory: SettingViewModelFactory
+    var  unitTemp  : String = "standard"
+    var  windSpeed : String = "Meter/Sec"
+    var  language  : String = "en"
+    var  locationSett  : String = "gps"
+    lateinit var settingNeed : SettingOptions
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,9 +66,12 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
         ))
 
         viewModel = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)
-        adapter = FavoritePlacesListAdapter(requireContext()){
-            country -> this.onClicktodelete(country)
-        }
+        sharedFactory = SettingViewModelFactory(requireActivity().application)
+        settingViewModel = ViewModelProvider(this,sharedFactory).get(SettingViewMode::class.java)
+        adapter = FavoritePlacesListAdapter(requireContext(),
+            { country -> this.onClicktodelete(country) },
+            { country -> this.onItemClick(country) }
+        )
         val layoutManager = LinearLayoutManager(context,RecyclerView.VERTICAL,false)
         recycleView.adapter = adapter
         recycleView.layoutManager = layoutManager
@@ -78,23 +94,34 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
             navController.navigate(R.id.searchOnMapFragment, bundle)
         }
 
-       /* requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                // Navigate back to HomeFragment
-          //      backToHomeFragment()
+        lifecycleScope.launch {
+            settingViewModel.settingsFlow.collectLatest { setting ->
+                unitTemp = setting.unitsTemp
+                language = setting.language
+                locationSett = setting.location
+                windSpeed = setting.windSpeed
+                settingNeed = setting
+                val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
+                Log.i(
+                    TAG,
+                    "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$locationSett "
+                )
             }
-        })*/
+        }
     }
 
     override fun onClicktodelete(country: Country) {
         viewModel.deletePlace(country)
     }
 
-    /*private fun backToHomeFragment() {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, HomeFragment())
-            .addToBackStack(null)
-            .commit()
-    }*/
+    override fun onItemClick(country: Country) {
+        val navController = findNavController()
+        val bundle = Bundle().apply {
+            putSerializable("fav_country", country) // Pass your boolean flag here
+            putSerializable("setting_data",settingNeed)
+        }
+        navController.navigate(R.id.favoriteDetailsFragment, bundle)
+    }
+
 
 }

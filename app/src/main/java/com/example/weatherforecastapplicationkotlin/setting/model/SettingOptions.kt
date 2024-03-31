@@ -7,4 +7,4 @@ data class SettingOptions(
     var windSpeed : String,
     var language  : String,
     var location  : String
-    )
+    ) : Serializable

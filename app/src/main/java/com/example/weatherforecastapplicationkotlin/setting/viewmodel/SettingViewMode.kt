@@ -20,6 +20,10 @@ class SettingViewMode(private val application: Application) : ViewModel() {
     val settingsFlow: SharedFlow<SettingOptions> = _settingsFlow
     private var mapFragmentOpenedFromSetting = false
 
+    init {
+        emitChangingSetting()
+    }
+
     fun updateSettings(settingOptions: SettingOptions) {
 
             with(settingsSharedPreference.edit()){

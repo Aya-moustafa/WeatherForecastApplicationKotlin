@@ -14,7 +14,7 @@
             android:icon="@drawable/heart_icon"
             android:title="Favorites"/>
         <item
-            android:id="@+id/allNotificationsFragment"
+            android:id="@+id/searchOnMapFragment"
             android:icon="@drawable/notification_icon"
             android:title="Notifications"/>
         <item

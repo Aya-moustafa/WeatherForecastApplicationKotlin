@@ -4,7 +4,6 @@ package com.example.weatherforecastapplicationkotlin.home_page.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
@@ -43,7 +42,6 @@ import com.example.weatherforecastapplicationkotlin.home_page.view_model.Weather
 import com.example.weatherforecastapplicationkotlin.model.Clouds
 import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.Weather
-import com.example.weatherforecastapplicationkotlin.model.WeatherForeCast
 import com.example.weatherforecastapplicationkotlin.model.WeatherItem
 import com.example.weatherforecastapplicationkotlin.model.WeatherMain
 import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
@@ -171,10 +169,10 @@ class HomeFragment : Fragment() {
         weatherViewModel = ViewModelProvider(this,weatherFactory).get(WeatherViewModel::class.java)
         sharedFactory = SettingViewModelFactory(requireActivity().application)
         settingViewModel = ViewModelProvider(this,sharedFactory).get(SettingViewMode::class.java)
-        val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
-        adapter = WeeklyForecastListAdapter(requireContext())
-        weekly_forecast.adapter = adapter
-        weekly_forecast.layoutManager = layoutManager
+        //val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
+        //adapter = WeeklyForecastListAdapter(requireContext())
+        //weekly_forecast.adapter = adapter
+        //weekly_forecast.layoutManager = layoutManager
         todayDate = getCurrentDateTimeFormatted()
         Log.i(TAG, "onViewCreated: Current Date is $todayDate")
         arguments?.let { args ->
@@ -227,9 +225,16 @@ class HomeFragment : Fragment() {
                                Log.i(TAG, "onViewCreated:  The Returned Data From Room is ${dateFromRoom} ")
                                var today = room_data.data.list.get(0)
                                var main: WeatherMain = room_data.data.list.get(0).main
-                               // if(locationSett == "gps") {
+                                if(language == "en") {
                                yourLocation.text = room_data.data.city.name
-                               //  }
+                                }else if (language == "ar") {
+                                    translateCityName(room_data.data.city.name) { translatedCityName ->
+                                        yourLocation.text = translatedCityName
+                                        //    yourLocation.invalidate()
+                                         Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
+                                    }
+
+                                }
                                if(unitTemp == "standard"){
                                    temp.text = today.getTemperatureInInt().toString()
                                    feelsLike.text = main.feels_like.toString()
@@ -241,9 +246,23 @@ class HomeFragment : Fragment() {
                                    feelsLike.text = kelvinToCelsius(main.feels_like).toString()
                                }
                                var weather: Weather = today.weather.get(0)
-                               desc.text = weather.description
-                               val formattedDate = formatDate(today.dt)
-                               date.text = formattedDate
+                               val formattedDate = formatDate(room_data.data.list.get(0).dt)
+                             if(language == "en"){
+                                 desc.text = weather.description
+                                 date.text = formattedDate
+                             }else if (language == "ar") {
+                                 translateCityName(weather.description) { translatedCityName ->
+                                     desc.text = translatedCityName
+                                     Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
+                                 }
+                                 translateCityName(formattedDate) { translatedCityName ->
+                                     date.text = translatedCityName
+                                     Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
+                                 }
+
+                             }
+
+
                                var wind: WindWeather = today.wind
                                Log.i("wind", "onViewCreated:${wind} ")
                                if (windSpeed == "Meter/Sec") {
@@ -319,6 +338,10 @@ class HomeFragment : Fragment() {
                 language = setting.language
                 locationSett = setting.location
                 windSpeed = setting.windSpeed
+                val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
+                adapter = WeeklyForecastListAdapter(requireContext(),setting)
+                weekly_forecast.adapter = adapter
+                weekly_forecast.layoutManager = layoutManager
                 lifecycleScope.launch(Dispatchers.Main) {
                     when (language) {
                         "ar" -> {
@@ -454,9 +477,9 @@ class HomeFragment : Fragment() {
                             Log.i(TAG, "getFreshLocation: The Rows Number : $rowCount and countryFromSharedApi $countryFromApi")
                            // weatherViewModel.getHomeWeatherFromRoom()
                                    if(locationSett == "gps"){
-                                       weatherViewModel.fetchDataofWeatherForeCast(latitude,longitude, API_KEY ,"standard" , language,todayDate)
+                                       weatherViewModel.fetchDataofWeatherForeCast(latitude,longitude, API_KEY ,"standard" , "en",todayDate)
                                    }else if (locationSett == "map"){
-                                       weatherViewModel.fetchDataofWeatherForeCast(latitudeFromSett,longitudeFromSett, API_KEY ,"standard" , language,todayDate)
+                                       weatherViewModel.fetchDataofWeatherForeCast(latitudeFromSett,longitudeFromSett, API_KEY ,"standard" , "en",todayDate)
                                    }
                         }
                         Log.i(TAG, "onLocationResult: TESTTTTTTTTTT WHICH FIRST 1")

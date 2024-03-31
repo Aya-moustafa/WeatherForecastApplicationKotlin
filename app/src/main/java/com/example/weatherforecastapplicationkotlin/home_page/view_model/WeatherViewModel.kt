@@ -67,18 +67,23 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
     fun setNotificationIdToDelete(notificationId: Int) {
         _notificationIdToDelete.value = notificationId
     }
-    fun getWeatherForecast (lat: Double , lon: Double ,apiKey: String,units : String,lan:String){
+    fun getWeatherForecast (lat: Double , lon: Double ,apiKey: String,units : String,lan:String ,fromFavorites : Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             val weather = _repo.getWeatherForecast(lat,lon,apiKey,units,lan)
             if(weather != null){
-                _weatherForecast.emit(weather)
-                Log.i("beforeclear", "getWeatherForecast: ")
-                clearAll()
-                Log.i("afterClear", "getWeatherForecast: ")
-                insertHomeWeatherDetails(weather)
-                Log.i("afterInsert", "getWeatherForecast: ")
-
-                getHomeWeatherFromRoom()
+                if(fromFavorites){
+                    Log.i("FromFavoTRUE", "getWeatherForecast: ")
+                    _weatherForecast.emit(weather)
+                }else{
+                    Log.i("FromFavoFALSE", "getWeatherForecast: ")
+                    _weatherForecast.emit(weather)
+                    Log.i("beforeclear", "getWeatherForecast: ")
+                    clearAll()
+                    Log.i("afterClear", "getWeatherForecast: ")
+                    insertHomeWeatherDetails(weather)
+                    Log.i("afterInsert", "getWeatherForecast: ")
+                    getHomeWeatherFromRoom()
+                }
             }
         }
     }
@@ -188,7 +193,7 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
           Log.i("weatherObjectFromRoom","latuideFromUser = $lat , and the LongtuideFromUser = $lon , and CurrentDate = $currentDate , and DateFrom $dateFromRoom")
 
           if(weatherObjectFromRoom == null){
-              getWeatherForecast(lat,lon,apiKey,units,lan)
+              getWeatherForecast(lat,lon,apiKey,units,lan,false)
               Log.i("Inside", "fetchDataofWeatherForeCast: ")
           }else {
               val tolerance = 0.0001
@@ -201,7 +206,7 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
                           getHomeWeatherFromRoom()
                       }else{
                       Log.i("DataChangedCall", "fetchDataofWeatherForeCast: ")
-                      getWeatherForecast(lat,lon,apiKey,units,lan)
+                      getWeatherForecast(lat,lon,apiKey,units,lan,false)
                       //getHomeWeatherFromRoom()
                   }
               }

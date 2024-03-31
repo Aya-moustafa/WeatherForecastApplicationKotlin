@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background"
-        android:orientation="vertical"
-       tools:context=".home_page.view.HomeFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".favorites.view.FavoriteDetailsFragment">
 
 
     <ScrollView
@@ -32,7 +32,7 @@
                 app:layout_constraintVertical_bias="0.42000002" />
 
             <TextView
-                android:id="@+id/tess"
+                android:id="@+id/favloc"
                 android:layout_width="204dp"
                 android:layout_height="48dp"
                 android:fontFamily="@font/baloo_bhai"
@@ -53,7 +53,7 @@
                 app:cardCornerRadius="40dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tess">
+                app:layout_constraintTop_toBottomOf="@+id/favloc">
 
                 <ImageView
                     android:id="@+id/imageView"
@@ -74,15 +74,15 @@
                         android:text="@string/feels"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/feelsLike"
-                        app:layout_constraintEnd_toStartOf="@+id/feelsLike"
+                        app:layout_constraintBottom_toBottomOf="@+id/favfeelsLike"
+                        app:layout_constraintEnd_toStartOf="@+id/favfeelsLike"
                         app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintStart_toStartOf="@+id/tempTxt"
-                        app:layout_constraintTop_toTopOf="@+id/feelsLike"
+                        app:layout_constraintStart_toStartOf="@+id/favtempTxt"
+                        app:layout_constraintTop_toTopOf="@+id/favfeelsLike"
                         app:layout_constraintVertical_bias="1.0" />
 
                     <TextView
-                        android:id="@+id/feelsLike"
+                        android:id="@+id/favfeelsLike"
                         android:layout_width="49dp"
                         android:layout_height="24dp"
                         android:layout_marginBottom="144dp"
@@ -93,10 +93,10 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.935"
-                        app:layout_constraintStart_toStartOf="@+id/tempTxt" />
+                        app:layout_constraintStart_toStartOf="@+id/favtempTxt" />
 
                     <TextView
-                        android:id="@+id/tempTxt"
+                        android:id="@+id/favtempTxt"
                         android:layout_width="126dp"
                         android:layout_height="127dp"
                         android:layout_marginEnd="16dp"
@@ -116,22 +116,22 @@
                         android:layout_marginStart="84dp"
                         android:layout_marginBottom="4dp"
                         android:src="@drawable/celsiusicon"
-                        app:layout_constraintBottom_toTopOf="@+id/feelsLike"
-                        app:layout_constraintStart_toStartOf="@+id/tempTxt" />
+                        app:layout_constraintBottom_toTopOf="@+id/favfeelsLike"
+                        app:layout_constraintStart_toStartOf="@+id/favtempTxt" />
 
                     <ImageView
-                        android:id="@+id/currentTempImg"
+                        android:id="@+id/favcurrentTempImg"
                         android:layout_width="166dp"
                         android:layout_height="154dp"
                         android:layout_marginBottom="44dp"
                         android:src="@drawable/ic_launcher_foreground"
-                        app:layout_constraintBottom_toTopOf="@+id/descTxt"
-                        app:layout_constraintEnd_toStartOf="@+id/tempTxt"
+                        app:layout_constraintBottom_toTopOf="@+id/favdescTxt"
+                        app:layout_constraintEnd_toStartOf="@+id/favtempTxt"
                         app:layout_constraintHorizontal_bias="0.404"
                         app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
-                        android:id="@+id/dateTxt"
+                        android:id="@+id/favdateTxt"
                         android:layout_width="207dp"
                         android:layout_height="37dp"
                         android:layout_marginBottom="4dp"
@@ -141,28 +141,27 @@
                         android:textColor="@color/white"
                         android:textSize="15sp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/descTxt"
+                        app:layout_constraintEnd_toEndOf="@+id/favdescTxt"
                         app:layout_constraintHorizontal_bias="0.037"
-                        app:layout_constraintStart_toStartOf="@+id/descTxt" />
+                        app:layout_constraintStart_toStartOf="@+id/favdescTxt" />
 
                     <TextView
-                        android:id="@+id/descTxt"
+                        android:id="@+id/favdescTxt"
                         android:layout_width="262dp"
                         android:layout_height="42dp"
                         android:layout_marginTop="188dp"
                         android:fontFamily="@font/tauri"
                         android:gravity="left"
                         android:text="TextView"
-
                         android:textColor="@color/white"
                         android:textSize="32sp"
-                        app:layout_constraintEnd_toEndOf="@+id/currentTempImg"
+                        app:layout_constraintEnd_toEndOf="@+id/favcurrentTempImg"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="@+id/currentTempImg"
+                        app:layout_constraintStart_toStartOf="@+id/favcurrentTempImg"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ProgressBar
-                        android:id="@+id/progressBar"
+                        android:id="@+id/favprogressBar"
                         style="?android:attr/progressBarStyle"
                         android:layout_width="218dp"
                         android:layout_height="54dp"
@@ -233,7 +232,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/cloudTxt"
+                            android:id="@+id/favcloudTxt"
                             android:layout_width="50dp"
                             android:layout_height="18dp"
                             android:gravity="left"
@@ -289,7 +288,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/windTxt"
+                            android:id="@+id/favwindTxt"
                             android:layout_width="65dp"
                             android:layout_height="13dp"
                             android:gravity="center|left"
@@ -346,7 +345,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/humdTxt"
+                            android:id="@+id/favhumdTxt"
                             android:layout_width="66dp"
                             android:layout_height="17dp"
                             android:gravity="left"
@@ -399,7 +398,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/pressTxt"
+                            android:id="@+id/favpressTxt"
                             android:layout_width="66dp"
                             android:layout_height="17dp"
                             android:gravity="left"
@@ -452,7 +451,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/uvTxt"
+                            android:id="@+id/favuvTxt"
                             android:layout_width="66dp"
                             android:layout_height="17dp"
                             android:gravity="left"
@@ -505,7 +504,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/visiTxt"
+                            android:id="@+id/favvisiTxt"
                             android:layout_width="66dp"
                             android:layout_height="17dp"
                             android:gravity="left"
@@ -562,7 +561,7 @@
                 android:text="@string/weekforecast"
                 android:textColor="@color/black"
                 android:textSize="25dp"
-                app:layout_constraintBottom_toTopOf="@+id/weekly_forecast_recycle"
+                app:layout_constraintBottom_toTopOf="@+id/favweekly_forecast_recycle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -570,7 +569,7 @@
                 app:layout_constraintVertical_bias="1.0" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/weekly_forecast_recycle"
+                android:id="@+id/favweekly_forecast_recycle"
                 android:layout_width="382dp"
                 android:layout_height="298dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -584,5 +583,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
-    </LinearLayout>
+</LinearLayout>
 
