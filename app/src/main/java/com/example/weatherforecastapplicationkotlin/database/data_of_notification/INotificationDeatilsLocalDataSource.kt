@@ -16,4 +16,7 @@ interface INotificationDeatilsLocalDataSource {
     suspend fun insertDate (notification: NotificationData)
     @Delete
     suspend fun deleteDate (notification: NotificationData)
+
+    @Query("DELETE FROM dates_notification WHERE toDate =:datetime AND toTime =:hourTime")
+    suspend fun deleteNotifiByDate(datetime: String , hourTime : String)
 }

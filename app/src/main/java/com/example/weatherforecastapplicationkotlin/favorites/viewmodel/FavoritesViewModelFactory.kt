@@ -2,7 +2,7 @@ package com.example.weatherforecastapplicationkotlin.favorites.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
 
 class FavoritesViewModelFactory (private val _irepo : WeatherRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

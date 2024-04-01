@@ -12,20 +12,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.LocalDataSource
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModel
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModelFactory
-import com.example.weatherforecastapplicationkotlin.home_page.view.WeeklyForecastListAdapter
+import com.example.weatherforecastapplicationkotlin.model.AllDaos
 import com.example.weatherforecastapplicationkotlin.model.Country
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -60,10 +57,9 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
         super.onViewCreated(view, savedInstanceState)
         mapBtnToAdd = view.findViewById(R.id.fab_add)
         recycleView = view.findViewById(R.id.fav_places_recycle)
-        favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext()),
-            TodayWeatherLocalDataSource(requireContext()),
-            NotificationDeatilsLocalDataSource(requireContext())
-        ))
+        favFactory = FavoritesViewModelFactory(
+            WeatherRepository.getInstance(
+                WeatherRemoteDataSource.getInstance() , LocalDataSource(AllDaos(requireContext()))))
 
         viewModel = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)
         sharedFactory = SettingViewModelFactory(requireActivity().application)

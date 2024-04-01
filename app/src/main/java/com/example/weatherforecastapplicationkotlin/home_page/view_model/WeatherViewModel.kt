@@ -2,42 +2,29 @@ package com.example.weatherforecastapplicationkotlin.home_page.view_model
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.weatherforecastapplicationkotlin.home_page.model.WeatherForeCastState
-import com.example.weatherforecastapplicationkotlin.model.Clouds
 import com.example.weatherforecastapplicationkotlin.model.Country
-import com.example.weatherforecastapplicationkotlin.model.Weather
 import com.example.weatherforecastapplicationkotlin.model.WeatherForeCast
-import com.example.weatherforecastapplicationkotlin.model.WeatherItem
-import com.example.weatherforecastapplicationkotlin.model.WeatherMain
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
-import com.example.weatherforecastapplicationkotlin.model.WindWeather
+import com.example.weatherforecastapplicationkotlin.model.repository.IWeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.notification_feature.model.NotificationData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNot
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import kotlin.math.log2
 
 
-class WeatherViewModel(private var _repo : WeatherRepository, val context : Context) : ViewModel() {
+class WeatherViewModel(private var _repo : IWeatherRepository, val context : Context) : ViewModel() {
 
     private var weatherForeCast: WeatherForeCast? = null
 
@@ -52,21 +39,9 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
     private var _weatherFromRoom = MutableStateFlow<WeatherForeCastState>(WeatherForeCastState.Loading)
     val weatherFromRoom =  _weatherFromRoom.asSharedFlow()
 
-    private var _notificationsDate : MutableStateFlow<List<NotificationData>> = MutableStateFlow<List<NotificationData>>(emptyList())
-    val notificationsDate  : StateFlow<List<NotificationData>> = _notificationsDate
-
-    private val _notificationIdToDelete = MutableLiveData<Int>()
-    val notificationIdToDelete: LiveData<Int>
-        get() = _notificationIdToDelete
-
     private var countrySharedPreference = context.getSharedPreferences("country",Context.MODE_PRIVATE)
-    init {
-        getNotifiDetails()
-    }
 
-    fun setNotificationIdToDelete(notificationId: Int) {
-        _notificationIdToDelete.value = notificationId
-    }
+
     fun getWeatherForecast (lat: Double , lon: Double ,apiKey: String,units : String,lan:String ,fromFavorites : Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             val weather = _repo.getWeatherForecast(lat,lon,apiKey,units,lan)
@@ -118,27 +93,6 @@ class WeatherViewModel(private var _repo : WeatherRepository, val context : Cont
         }
     }
 
-    fun getNotifiDetails () {
-        viewModelScope.launch(Dispatchers.IO){
-            _repo.getAllNotificationsDate().collect{
-                dates -> _notificationsDate.emit(dates)
-                Log.i("getNotifiDetails", "getNotifiDetails: all Dates $dates")
-            }
-        }
-    }
-
-    fun insertNewDate (notificationData: NotificationData){
-        viewModelScope.launch(Dispatchers.IO){
-            _repo.insertDate(notificationData)
-        }
-    }
-
-    fun deleteOldDate (notificationData: NotificationData){
-        viewModelScope.launch(Dispatchers.IO){
-            _repo.deleteDate(notificationData)
-            getNotifiDetails()
-        }
-    }
 
     fun clearAll () {
         viewModelScope.launch(Dispatchers.IO) {

@@ -16,19 +16,20 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.weatherforecastapplicationkotlin.MainActivity.API_KEY
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.ILocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.LocalDataSource
 import com.example.weatherforecastapplicationkotlin.home_page.view.WeeklyForecastListAdapter
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
+import com.example.weatherforecastapplicationkotlin.model.AllDaos
 import com.example.weatherforecastapplicationkotlin.model.Clouds
 import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.Weather
 import com.example.weatherforecastapplicationkotlin.model.WeatherItem
 import com.example.weatherforecastapplicationkotlin.model.WeatherMain
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.model.WindWeather
+import com.example.weatherforecastapplicationkotlin.network.IWeatherRemoteDataSource
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import com.example.weatherforecastapplicationkotlin.setting.model.SettingOptions
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
@@ -97,14 +98,8 @@ class FavoriteDetailsFragment : Fragment() {
                 TAG,
                 "onViewCreatedFIRST: ${country?.countryName} ${country?.cityName} , ${country.latitude}"
             )
-            weatherFactory = WeatherViewModelFactory(
-                WeatherRepository.getInstance(
-                    WeatherRemoteDataSource.getInstance(),
-                    WeatherLocalDataSource(requireContext()),
-                    TodayWeatherLocalDataSource(requireContext()),
-                    NotificationDeatilsLocalDataSource(requireContext())
-                ), requireContext()
-            )
+            weatherFactory = WeatherViewModelFactory(WeatherRepository.getInstance(
+                WeatherRemoteDataSource.getInstance() , LocalDataSource(AllDaos(requireContext()))) , requireContext())
             weatherViewModel =
                 ViewModelProvider(this, weatherFactory).get(WeatherViewModel::class.java)
             sharedFactory = SettingViewModelFactory(requireActivity().application)

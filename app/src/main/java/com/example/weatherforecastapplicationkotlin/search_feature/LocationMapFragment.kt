@@ -17,11 +17,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.weatherforecastapplicationkotlin.MainActivity.isSearchOnMapOpenedFromSetting
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.LocalDataSource
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModel
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModelFactory
 import com.example.weatherforecastapplicationkotlin.model.Country
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
@@ -39,8 +39,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale
 import androidx.navigation.fragment.findNavController
-import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
+import com.example.weatherforecastapplicationkotlin.model.AllDaos
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -55,6 +54,7 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
     lateinit var  fav_view_model: FavoritesViewModel
     var  fromSetting : Boolean = false
     var  fromFavorite: Boolean = false
+    var  fromNotification: Boolean = false
     lateinit  var settingViewModel: SettingViewMode
     lateinit var  sharedFactory: SettingViewModelFactory
     var language : String = "en"
@@ -83,11 +83,11 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
         }
         fromSetting = arguments?.getBoolean("fromSetting") ?: false
         fromFavorite = arguments?.getBoolean("fromFavorite") ?: false
+        fromNotification = arguments?.getBoolean("fromNotification") ?: false
 
-        favFactory = FavoritesViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(), WeatherLocalDataSource(requireContext()),
-            TodayWeatherLocalDataSource(requireContext()),
-            NotificationDeatilsLocalDataSource(requireContext())
-        ))
+        favFactory = FavoritesViewModelFactory(
+            WeatherRepository.getInstance(
+                WeatherRemoteDataSource.getInstance() , LocalDataSource(AllDaos(requireContext()))))
         fav_view_model = ViewModelProvider(this,favFactory).get(FavoritesViewModel::class.java)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
@@ -170,7 +170,7 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
                         val cityName = getCityName(addresses)
                         if (!cityName.isNullOrEmpty() && addressesCountry != null) {
                             val country = Country(cityName,addressesCountry.toString(), latLng.latitude, latLng.longitude)
-                            fav_view_model.insertProduct(country)
+                            fav_view_model.insertPlace(country)
                             Toast.makeText(
                                 requireContext(),
                                 "insert ${cityName} Success..",
@@ -209,9 +209,28 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
                     ).show()
                 }
             }
+        } else if(fromNotification){
+            gMap.setOnMapClickListener { latLng ->
+                addMarker(latLng)
+
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                val cityName = getCityName(addresses)
+                if (!cityName.isNullOrEmpty()) {
+                    val country = Country(cityName,addresses.toString(), latLng.latitude, latLng.longitude)
+                    alertNotificationDialogAppear(country)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select correct place",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
         fromSetting = false
         fromFavorite= false
+        fromNotification = false
     }
 
     private fun alertDialogAppear(country: Country) {
@@ -228,6 +247,30 @@ class LocationMapFragment : Fragment() , OnMapReadyCallback {
                         Log.i(TAG, "alertDialogAppear: ${country.countryName}")
                     }
                     navController.navigate(R.id.homeFragment,bundle)
+
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Dismiss") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+
+    private fun alertNotificationDialogAppear(country: Country) {
+        translateCityName(country.countryName) { translatedCityName ->
+            cityInArabiclan = translatedCityName
+            Log.i(TAG, "onViewCreated: the returned city when ar : $translatedCityName")
+            AlertDialog.Builder(requireContext())
+                .setMessage("${cityInArabiclan}")
+                .setPositiveButton("Save") { dialog, _ ->
+
+                    val navController = findNavController()
+                    val bundle = Bundle().apply {
+                        putSerializable("country_notification",country)
+                        Log.i(TAG, "alertDialogAppear: ${country.countryName}")
+                    }
+                    navController.navigate(R.id.allNotificationsFragment,bundle)
 
                     dialog.dismiss()
                 }

@@ -33,18 +33,17 @@ import com.example.weatherforecastapplicationkotlin.MainActivity.API_KEY
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewMode
 import com.example.weatherforecastapplicationkotlin.setting.viewmodel.SettingViewModelFactory
 import com.example.weatherforecastapplicationkotlin.R
-import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.WeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_for_home_page.TodayWeatherLocalDataSource
-import com.example.weatherforecastapplicationkotlin.database.data_of_notification.NotificationDeatilsLocalDataSource
+import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.LocalDataSource
 import com.example.weatherforecastapplicationkotlin.home_page.model.WeatherForeCastState
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
+import com.example.weatherforecastapplicationkotlin.model.AllDaos
 import com.example.weatherforecastapplicationkotlin.model.Clouds
 import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.Weather
 import com.example.weatherforecastapplicationkotlin.model.WeatherItem
 import com.example.weatherforecastapplicationkotlin.model.WeatherMain
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
 import com.example.weatherforecastapplicationkotlin.model.WindWeather
 import com.example.weatherforecastapplicationkotlin.network.WeatherRemoteDataSource
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -58,14 +57,12 @@ import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
@@ -163,9 +160,9 @@ class HomeFragment : Fragment() {
         } else {
             enableLocationServices()
         }
-        weatherFactory = WeatherViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.getInstance(),
-            WeatherLocalDataSource(requireContext()), TodayWeatherLocalDataSource(requireContext()), NotificationDeatilsLocalDataSource(requireContext())
-        ),requireContext())
+        weatherFactory = WeatherViewModelFactory(
+            WeatherRepository.getInstance(
+                WeatherRemoteDataSource.getInstance() , LocalDataSource(AllDaos(requireContext()))),requireContext())
         weatherViewModel = ViewModelProvider(this,weatherFactory).get(WeatherViewModel::class.java)
         sharedFactory = SettingViewModelFactory(requireActivity().application)
         settingViewModel = ViewModelProvider(this,sharedFactory).get(SettingViewMode::class.java)

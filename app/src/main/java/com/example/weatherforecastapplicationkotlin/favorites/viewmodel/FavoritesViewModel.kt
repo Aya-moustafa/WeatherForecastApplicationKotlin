@@ -1,28 +1,23 @@
 package com.example.weatherforecastapplicationkotlin.favorites.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecastapplicationkotlin.model.Country
-import com.example.weatherforecastapplicationkotlin.model.WeatherRepository
+import com.example.weatherforecastapplicationkotlin.model.repository.IWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class FavoritesViewModel(private val _irepo : WeatherRepository) : ViewModel() {
+class FavoritesViewModel(private val _irepo : IWeatherRepository) : ViewModel() {
     private var _favplaces : MutableStateFlow<List<Country>> = MutableStateFlow<List<Country>>(emptyList())
     val favplaces : StateFlow<List<Country>> = _favplaces
-
-
 
     init {
            getLocalPlaces()
     }
 
-   fun insertProduct (country: Country){
+   fun insertPlace (country: Country){
         viewModelScope.launch(Dispatchers.IO){
             _irepo.insertNewPlaceToFavorites(country)
         }

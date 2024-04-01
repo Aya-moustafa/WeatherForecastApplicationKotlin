@@ -49,6 +49,12 @@
         <action
             android:id="@+id/action_searchOnMapFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
+        <argument
+            android:name="fromNotification"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_searchOnMapFragment_to_allNotificationsFragment"
+            app:destination="@id/allNotificationsFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingFragment"
@@ -63,7 +69,14 @@
         android:id="@+id/allNotificationsFragment"
         android:name="com.example.weatherforecastapplicationkotlin.notification_feature.view.AllNotificationsFragment"
         android:label="fragment_all_notifications"
-        tools:layout="@layout/fragment_all_notifications" />
+        tools:layout="@layout/fragment_all_notifications" >
+        <action
+            android:id="@+id/action_allNotificationsFragment_to_searchOnMapFragment"
+            app:destination="@id/searchOnMapFragment" />
+        <argument
+            android:name="place_details"
+            app:argType="com.example.weatherforecastapplicationkotlin.model.Country" />
+    </fragment>
     <fragment
         android:id="@+id/favoriteDetailsFragment"
         android:name="com.example.weatherforecastapplicationkotlin.favorites.view.FavoriteDetailsFragment"
