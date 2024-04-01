@@ -399,9 +399,13 @@ class AllNotificationsFragment : Fragment(){
     }
 
     fun converttDateFormat(inputDate: String): String {
-        val inputFormat = SimpleDateFormat("d MMM, yyyy", Locale.ENGLISH)
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-        val date = inputFormat.parse(inputDate)
-        return outputFormat.format(date)
+        if (inputDate.isNotBlank()) {
+            val inputFormat = SimpleDateFormat("d MMM, yyyy", Locale.ENGLISH)
+            val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+            val date = inputFormat.parse(inputDate)
+            return outputFormat.format(date)
+        } else {
+            return ""
+        }
     }
 }

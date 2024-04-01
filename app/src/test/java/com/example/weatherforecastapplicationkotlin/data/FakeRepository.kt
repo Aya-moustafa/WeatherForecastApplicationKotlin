@@ -78,4 +78,8 @@ class FakeRepository : IWeatherRepository {
     override suspend fun deleteDate(notification: NotificationData) {
         fakeNotifications.remove(notification)
     }
+
+    override suspend fun deleteNotifiByDate(datetime: String, hourTime: String) {
+        TODO("Not yet implemented")
+    }
 }

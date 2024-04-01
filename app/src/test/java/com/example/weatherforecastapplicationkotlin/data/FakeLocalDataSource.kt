@@ -29,6 +29,10 @@ class FakeLocalDataSource : ILocalDataSource {
         alerts_Dtae.remove(notification)
     }
 
+    override suspend fun deleteSpcDate(datetime: String, hourTime: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun getFavPlaces(): Flow<List<Country>> {
         return flowOf(fav_places)
     }

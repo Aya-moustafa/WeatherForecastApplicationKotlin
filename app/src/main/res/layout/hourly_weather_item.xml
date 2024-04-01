@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/countryconstrain"
-    android:layout_width="110dp"
-    android:layout_height="250dp">
+    android:layout_width="match_parent"
+    android:layout_height="120dp">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/Weekly_Card"
-        android:layout_width="75dp"
-        android:layout_height="200dp"
+        android:id="@+id/hourly_Card"
+        android:layout_width="387dp"
+        android:layout_height="76dp"
         android:elevation="1dp"
         app:cardBackgroundColor="@color/background"
         app:cardCornerRadius="50dp"
@@ -22,66 +22,84 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <TextView
-                android:id="@+id/dayTxt"
-                android:layout_width="72dp"
-                android:layout_height="21dp"
-                android:layout_marginTop="16dp"
+                android:id="@+id/hourldayTxt"
+                android:layout_width="84dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="24dp"
                 android:fontFamily="@font/tauri"
                 android:gravity="center"
-                android:text="TextView"
+                android:text=" "
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.052"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <TextView
-                android:id="@+id/myTxt"
-                android:layout_width="72dp"
-                android:layout_height="21dp"
+                android:id="@+id/hourlmyTxt"
+                android:layout_width="83dp"
+                android:layout_height="25dp"
                 android:layout_marginTop="36dp"
                 android:fontFamily="@font/baloo_bhai"
                 android:gravity="center"
-                android:text="TextView"
+                android:text=" "
                 android:textColor="@color/gray"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.055"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/weekly_img"
-                android:layout_width="72dp"
-                android:layout_height="65dp"
-                android:layout_marginTop="24dp"
+                android:id="@+id/hourly_img"
+                android:layout_width="44dp"
+                android:layout_height="42dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dayTxt"
+                app:layout_constraintHorizontal_bias="0.168"
+                app:layout_constraintStart_toEndOf="@+id/hourldayTxt"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.588"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <TextView
-                android:id="@+id/weekly_temp"
+                android:id="@+id/hourly_temp"
                 android:layout_width="51dp"
                 android:layout_height="46dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
                 android:gravity="center"
                 android:text="0"
                 android:textColor="@color/black"
                 android:textSize="26sp"
-                app:layout_constraintEnd_toEndOf="@+id/weekly_img"
-                app:layout_constraintHorizontal_bias="0.523"
-                app:layout_constraintStart_toStartOf="@+id/weekly_img"
-                app:layout_constraintTop_toBottomOf="@+id/weekly_img" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/imageView6"
                 android:layout_width="35dp"
                 android:layout_height="39dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/weekly_temp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/hourly_img"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/celsiusblackicon" />
+
+            <TextView
+                android:id="@+id/descr"
+                android:layout_width="72dp"
+                android:layout_height="25dp"
+                android:layout_marginEnd="48dp"
+                android:fontFamily="@font/tauri"
+                android:gravity="center"
+                android:text=" "
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/hourly_img"
+                app:layout_constraintEnd_toStartOf="@+id/hourly_temp"
+                app:layout_constraintTop_toTopOf="@+id/hourly_img"
+                app:layout_constraintVertical_bias="0.352" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

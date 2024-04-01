@@ -22,23 +22,21 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
-import java.text.SimpleDateFormat
-import java.util.Locale
 
-class WeeklyForecastListAdapter(context: Context , setting  :SettingOptions)  : ListAdapter<WeatherItem, MyViewHolder>(MyDiffUtil()) {
+class HourlyWeatherListAdapter(context: Context, setting  : SettingOptions)  : ListAdapter<WeatherItem, MyHourlyViewHolder>(MyHourlyDiffUtil()) {
 
     private lateinit var weekly_forecast_List : List<WeatherItem>
     private val context : Context = context
     private val setting = setting
     private lateinit var translateArabic : Translator
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHourlyViewHolder {
         val inflater : LayoutInflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view : View = inflater.inflate(R.layout.hourly_weather_item, parent , false)
-        return MyViewHolder(view)
+        val view : View = inflater.inflate(R.layout.weekly_forecast_weather, parent , false)
+        return MyHourlyViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyHourlyViewHolder, position: Int) {
         val weatherItem : WeatherItem = getItem(position)
         var weather : Weather = weatherItem.weather.get(0)
         val currentDate = weatherItem.dt_txt.substring(0, 10) // Extracting date without time
@@ -47,14 +45,13 @@ class WeeklyForecastListAdapter(context: Context , setting  :SettingOptions)  : 
         downloadModelToTranslate()
         var formattedDate  = HomeFragment.formatDate(weatherItem.dt)
         Log.i("Adapter", "onBindViewHolder: formattedDate $formattedDate ")
-
+        var FirstThreeLetterFromDay = formatTime(weatherItem.dt_txt)
         if(setting.language == "en") {
             var indexComma = formattedDate.indexOf(",") + 1
             val monthAndYear = formattedDate.substring(indexComma)
-            var FirstThreeLetterFromDay = formattedDate.substring(0, 3)
+            Log.i("TimePart", "onBindViewHolder: formattedDate $FirstThreeLetterFromDay ")
             holder.week_day.text = FirstThreeLetterFromDay
             holder.weekly_date.text = monthAndYear.toString()
-            holder.description.text = weather.description
         }else if (setting.language == "ar") {
             translateDate(formattedDate) { translatedDate ->
                 var indexComma = translatedDate.indexOf("،") + 1
@@ -64,9 +61,10 @@ class WeeklyForecastListAdapter(context: Context , setting  :SettingOptions)  : 
                 holder.week_day.text = day
                 holder.weekly_date.text = monthAndYear
             }
-            translateDate(weather.description) { translatedDesc ->
-               holder.description.text = translatedDesc
+            translateDate(FirstThreeLetterFromDay) { translatedDate ->
+                holder.week_day.text = translatedDate
             }
+
         }
 
         if(setting.unitsTemp == "standard"){
@@ -123,7 +121,7 @@ class WeeklyForecastListAdapter(context: Context , setting  :SettingOptions)  : 
 }
 
 
-class MyDiffUtil : DiffUtil.ItemCallback<WeatherItem>(){
+class MyHourlyDiffUtil : DiffUtil.ItemCallback<WeatherItem>(){
     override fun areItemsTheSame(oldItem: WeatherItem, newItem: WeatherItem): Boolean {
         return oldItem.dt == newItem.dt
     }
@@ -134,31 +132,23 @@ class MyDiffUtil : DiffUtil.ItemCallback<WeatherItem>(){
 
 }
 
+fun getTimeOnly(dateTimeString: String): String {
+    // Split the date and time parts
+    val parts = dateTimeString.split(" ")
 
-fun kelvinToCelsius(kelvin: Double): Double? {
-    return (kelvin - 273.15)
+    // Get the time part from the second element
+    val timePart = parts.getOrNull(1) ?: return "" // Return empty string if the format is incorrect
+
+    // Return the time part
+    return timePart
 }
 
-fun kelvinToFahrenheit(kelvin: Double): Double? {
-    return (kelvin * 9/5 - 459.67)
-}
-
-fun formatTime(inputDate: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-    val outputFormat = SimpleDateFormat("h a", Locale.ENGLISH)
-
-    val date = inputFormat.parse(inputDate)
-
-    return outputFormat.format(date)
-}
-
-class MyViewHolder (private val itemView : View) : RecyclerView.ViewHolder(itemView){
-    val week_day : TextView = itemView.findViewById(R.id.hourldayTxt)
-    val weeklyTemp : TextView = itemView.findViewById(R.id.hourly_temp)
-    val weekly_date : TextView = itemView.findViewById(R.id.hourlmyTxt)
-    val description : TextView = itemView.findViewById(R.id.descr)
-    val weekDayImg   : ImageView = itemView.findViewById(R.id.hourly_img)
-    val productCardView : CardView = itemView.findViewById(R.id.hourly_Card)
+class MyHourlyViewHolder (private val itemView : View) : RecyclerView.ViewHolder(itemView){
+    val week_day : TextView = itemView.findViewById(R.id.dayTxt)
+    val weeklyTemp : TextView = itemView.findViewById(R.id.weekly_temp)
+    val weekly_date : TextView = itemView.findViewById(R.id.myTxt)
+    val weekDayImg   : ImageView = itemView.findViewById(R.id.weekly_img)
+    val productCardView : CardView = itemView.findViewById(R.id.Weekly_Card)
 
 
 }

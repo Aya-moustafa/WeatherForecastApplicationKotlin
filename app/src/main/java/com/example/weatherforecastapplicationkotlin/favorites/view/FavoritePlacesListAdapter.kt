@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.navigation.fragment.findNavController
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -29,12 +30,24 @@ class FavoritePlacesListAdapter(private var context: Context,private var deleteL
         holder.country.text = country.countryName
         holder.placeName.text = country.cityName
         holder.delete.setOnClickListener{
-            deleteListener(country)
+            showDeleteConfirmationDialog(country)
         }
         holder.placeName.setOnClickListener {
             clickItem(country)
         }
 
+    }
+
+
+    private fun showDeleteConfirmationDialog(country: Country) {
+        AlertDialog.Builder(context)
+            .setTitle("Delete")
+            .setMessage("Are you sure you want to delete ${country.cityName}?")
+            .setPositiveButton("Yes") { _, _ ->
+                deleteListener(country)
+            }
+            .setNegativeButton("No", null)
+            .show()
     }
 
     inner class FavWeatherViewHolder(private val layout: View) : RecyclerView.ViewHolder(layout) {

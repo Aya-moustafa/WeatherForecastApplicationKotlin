@@ -1,5 +1,10 @@
 package com.example.weatherforecastapplicationkotlin.favorites.view
 
+import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +25,7 @@ import com.example.weatherforecastapplicationkotlin.MainActivity.API_KEY
 import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.ILocalDataSource
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.LocalDataSource
+import com.example.weatherforecastapplicationkotlin.home_page.view.HourlyWeatherListAdapter
 import com.example.weatherforecastapplicationkotlin.home_page.view.WeeklyForecastListAdapter
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModel
 import com.example.weatherforecastapplicationkotlin.home_page.view_model.WeatherViewModelFactory
@@ -68,6 +76,8 @@ class FavoriteDetailsFragment : Fragment() {
     lateinit  var settingViewModel: SettingViewMode
     lateinit var  adapter : WeeklyForecastListAdapter
     lateinit var  sharedFactory: SettingViewModelFactory
+    private lateinit var houlry_forecast : RecyclerView
+    lateinit var  houradapter: HourlyWeatherListAdapter
     var  unitTemp  : String = "standard"
     var  windSpeed : String = "Meter/Sec"
     var  language  : String = "en"
@@ -93,6 +103,7 @@ class FavoriteDetailsFragment : Fragment() {
         val country = arguments?.getSerializable("fav_country") as Country?
         var settingOptions = arguments?.getSerializable("setting_data") as SettingOptions?
         downloadModelToTranslate()
+        checkInternetConnection(requireContext())
         if (country != null && settingOptions != null) {
             Log.i(
                 TAG,
@@ -119,11 +130,17 @@ class FavoriteDetailsFragment : Fragment() {
             favUVTV = view.findViewById(R.id.favuvTxt)
             favvisibTV = view.findViewById(R.id.favvisiTxt)
             favweekly_forecast = view.findViewById(R.id.favweekly_forecast_recycle)
-            val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
+            houlry_forecast = view.findViewById(R.id.hourlyhome_recycler_view)
+            val layoutManager = LinearLayoutManager(context,RecyclerView.VERTICAL,false)
             adapter = WeeklyForecastListAdapter(requireContext(), settingOptions)
             Log.i(TAG, "settingInAdapte: $settingOptions ")
             favweekly_forecast.adapter = adapter
             favweekly_forecast.layoutManager = layoutManager
+
+            val layoutManagerHourly = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
+            houradapter= HourlyWeatherListAdapter(requireContext(),settingOptions)
+            houlry_forecast.adapter=houradapter
+            houlry_forecast.layoutManager = layoutManagerHourly
             lifecycleScope.launch {
                 weatherViewModel.weatherForecast.collect { weatherForecast ->
                     Log.i(TAG, "onViewCreated: The Returned Data From Api : ${weatherForecast}")
@@ -225,6 +242,15 @@ class FavoriteDetailsFragment : Fragment() {
                     }
                     Log.i(TAG, "adapter2: ")
                     adapter.submitList(filteredList)
+                    val hourlyList = mutableListOf<WeatherItem>()
+                    val firstDayDate = getDatePart(weatherForecast.list.get(0).dt_txt)
+                    weatherForecast.list.forEach {
+                            weatherItem ->
+                        if(weatherItem.dt_txt.contains(firstDayDate))
+                            hourlyList.add(weatherItem)
+                        houradapter.submitList(hourlyList)
+                    }
+                    Log.i(TAG, "onViewCreated: FFFFFFINALLY  : ${hourlyList}  , firstDay = $firstDayDate")
                     Log.i(
                         TAG,
                         "onViewCreated: The Weather Forecast For 5 days left is: $filteredList"
@@ -273,7 +299,29 @@ class FavoriteDetailsFragment : Fragment() {
                 "onViewCreated: country.latitude = $country.latitude , $country.longtuide"
             )
         }
+
     }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+
+
+
+
+    private fun showNoInternetDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("No Internet Connection")
+            .setMessage("Please check your internet connection and try again.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     override fun onStart() {
         super.onStart()
         Log.i(TAG, "onStart: ")
@@ -339,5 +387,30 @@ class FavoriteDetailsFragment : Fragment() {
     }
     fun formatCloudiness(clouds: Clouds): String {
         return "${clouds.all}%"
+    }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        } else {
+            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+            return networkInfo.isConnected
+        }
+    }
+
+    // Example usage
+    fun checkInternetConnection(context: Context) {
+        if (isNetworkAvailable(context)) {
+            // Internet connection is available
+            Toast.makeText(context, "You are online", Toast.LENGTH_SHORT).show()
+        } else {
+            // No internet connection
+            Toast.makeText(context, "You are offline", Toast.LENGTH_SHORT).show()
+        }
     }
 }

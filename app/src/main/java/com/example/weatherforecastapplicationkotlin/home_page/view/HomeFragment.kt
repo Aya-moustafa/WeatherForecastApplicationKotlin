@@ -81,8 +81,10 @@ class HomeFragment : Fragment() {
     private lateinit var visibTV : TextView
     private lateinit var presstureTV : TextView
     private lateinit var weekly_forecast : RecyclerView
+    private lateinit var houlry_forecast : RecyclerView
     private lateinit var current_temp_img : ImageView
     lateinit var  adapter : WeeklyForecastListAdapter
+    lateinit var  houradapter: HourlyWeatherListAdapter
     var  rowCount: Int = 0
     // private lateinit var weekly_forecast_List : List<WeatherItem>
 
@@ -149,6 +151,7 @@ class HomeFragment : Fragment() {
         UVTV         = view.findViewById(R.id.uvTxt)
         visibTV      = view.findViewById(R.id.visiTxt)
         weekly_forecast = view.findViewById(R.id.weekly_forecast_recycle)
+        houlry_forecast = view.findViewById(R.id.hourly_recycler_view)
         progressBar  = view.findViewById(R.id.progressBar)
 
         if (isLocationEnabled()) {
@@ -231,6 +234,8 @@ class HomeFragment : Fragment() {
                                          Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
                                     }
 
+                                }else {
+                                    yourLocation.text = room_data.data.city.name
                                 }
                                if(unitTemp == "standard"){
                                    temp.text = today.getTemperatureInInt().toString()
@@ -241,6 +246,9 @@ class HomeFragment : Fragment() {
                                }else if (unitTemp == "metric") {
                                    temp.text = kelvinToCelsius(today.main.temp)?.toInt().toString()
                                    feelsLike.text = kelvinToCelsius(main.feels_like).toString()
+                               }else{
+                                   temp.text = today.getTemperatureInInt().toString()
+                                   feelsLike.text = main.feels_like.toString()
                                }
                                var weather: Weather = today.weather.get(0)
                                val formattedDate = formatDate(room_data.data.list.get(0).dt)
@@ -257,6 +265,9 @@ class HomeFragment : Fragment() {
                                      Log.i(TAG, "onViewCreated: the returned city when Ar : $translatedCityName")
                                  }
 
+                             }else {
+                                 desc.text = weather.description
+                                 date.text = formattedDate
                              }
 
 
@@ -268,6 +279,9 @@ class HomeFragment : Fragment() {
                                } else if (windSpeed == "Mile/Hour") {
                                    var formattedWind = formatWindInMilesPerHour(wind)
                                    windTV.text = formattedWind + "mph"
+                               }else{
+                                   var formattedWind = formatWindInMeterPerSec(wind)
+                                   windTV.text = formattedWind + "m/s"
                                }
                                var clouds: Clouds = today.clouds
                                var formatedClouds = formatCloudiness(clouds)
@@ -288,6 +302,7 @@ class HomeFragment : Fragment() {
                                    )
                                    .into(current_temp_img)
                                val filteredList = mutableListOf<WeatherItem>()
+                               val hourlyList = mutableListOf<WeatherItem>()
 
                                var isFirstDay = true
                                var previousDate = ""
@@ -310,13 +325,21 @@ class HomeFragment : Fragment() {
 
                                    }
                                }
-
                                adapter.submitList(filteredList)
                                Log.i(
                                    TAG,
                                    "onViewCreated: The Weather Forecast For 5 days left is: $filteredList"
                                )
-                           }is WeatherForeCastState.Failure -> {
+
+                           val firstDayDate = getDatePart(room_data.data.list.get(0).dt_txt)
+                           room_data.data.list.forEach {
+                               weatherItem ->
+                               if(weatherItem.dt_txt.contains(firstDayDate))
+                                   hourlyList.add(weatherItem)
+                                   houradapter.submitList(hourlyList)
+                           }
+                           Log.i(TAG, "onViewCreated: FFFFFFINALLY  : ${hourlyList}  , firstDay = $firstDayDate")
+                       }is WeatherForeCastState.Failure -> {
                                weekly_forecast.visibility = View.GONE
                                progressBar.visibility = View.GONE
                                Toast.makeText(
@@ -325,6 +348,8 @@ class HomeFragment : Fragment() {
                                    Toast.LENGTH_SHORT
                                ).show()
                           }
+
+                           else -> {}
                        }
                }
            }
@@ -335,10 +360,14 @@ class HomeFragment : Fragment() {
                 language = setting.language
                 locationSett = setting.location
                 windSpeed = setting.windSpeed
-                val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
+                val layoutManager = LinearLayoutManager(context,RecyclerView.VERTICAL,false)
+                val layoutManagerHourly = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
                 adapter = WeeklyForecastListAdapter(requireContext(),setting)
+                houradapter= HourlyWeatherListAdapter(requireContext(),setting)
                 weekly_forecast.adapter = adapter
+                houlry_forecast.adapter = houradapter
                 weekly_forecast.layoutManager = layoutManager
+                houlry_forecast.layoutManager = layoutManagerHourly
                 lifecycleScope.launch(Dispatchers.Main) {
                     when (language) {
                         "ar" -> {

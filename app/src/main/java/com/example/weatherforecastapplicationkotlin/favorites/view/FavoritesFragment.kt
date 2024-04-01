@@ -15,6 +15,7 @@ import com.example.weatherforecastapplicationkotlin.R
 import com.example.weatherforecastapplicationkotlin.database.data_for_favorites_places.LocalDataSource
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModel
 import com.example.weatherforecastapplicationkotlin.favorites.viewmodel.FavoritesViewModelFactory
+import com.example.weatherforecastapplicationkotlin.home_page.view.HourlyWeatherListAdapter
 import com.example.weatherforecastapplicationkotlin.model.AllDaos
 import com.example.weatherforecastapplicationkotlin.model.Country
 import com.example.weatherforecastapplicationkotlin.model.repository.WeatherRepository
@@ -30,16 +31,19 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
     private final var TAG :String = "FavoritesFragment"
     lateinit var mapBtnToAdd : FloatingActionButton
     lateinit var recycleView : RecyclerView
+
     lateinit var adapter: FavoritePlacesListAdapter
     lateinit var viewModel : FavoritesViewModel
     lateinit  var favFactory : FavoritesViewModelFactory
     lateinit  var settingViewModel: SettingViewMode
+    private lateinit var houlry_forecast : RecyclerView
     lateinit var  sharedFactory: SettingViewModelFactory
     var  unitTemp  : String = "standard"
     var  windSpeed : String = "Meter/Sec"
     var  language  : String = "en"
     var  locationSett  : String = "gps"
     lateinit var settingNeed : SettingOptions
+    lateinit var  houradapter: HourlyWeatherListAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -97,7 +101,6 @@ class FavoritesFragment : Fragment() ,OnDeleteFavClickListener {
                 locationSett = setting.location
                 windSpeed = setting.windSpeed
                 settingNeed = setting
-                val layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL,false)
                 Log.i(
                     TAG,
                     "collectSettingsData: 1-$unitTemp , 2-$windSpeed , 3-$language , 4-$locationSett "
